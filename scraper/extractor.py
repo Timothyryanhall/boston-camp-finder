@@ -71,5 +71,6 @@ def extract_camps(
         )
         text = message.content[0].text.strip()
         return json.loads(text)
-    except Exception:
+    except Exception as e:
+        print(f"  [extractor error] {type(e).__name__}: {e}")
         return dict(_EMPTY_RESULT)

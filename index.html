@@ -163,14 +163,14 @@
           ? `${c.distance_from_roslindale_miles} mi` : '—';
 
         const yearCell = c.data_is_stale
-          ? `<span class="badge stale-badge" title="Info from ${c.data_year}. Verify with camp directly.">${c.data_year} ⚠</span>`
-          : `<span class="badge current-badge">${c.data_year || '—'}</span>`;
+          ? `<span class="badge stale-badge" title="Info from ${esc(c.data_year)}. Verify with camp directly.">${esc(c.data_year)} ⚠</span>`
+          : `<span class="badge current-badge">${esc(c.data_year)}</span>`;
 
         const aid = c.financial_aid_available === true ? 'Yes'
           : c.financial_aid_available === false ? 'No' : '—';
 
         tr.innerHTML = `
-          <td><a href="${safeUrl(c.website_url)}" target="_blank" rel="noopener">${esc(c.camp_name)}</a></td>
+          <td><a href="${esc(safeUrl(c.website_url))}" target="_blank" rel="noopener">${esc(c.camp_name)}</a></td>
           <td>${esc(c.organization)}</td>
           <td>${esc(c.camp_type)}</td>
           <td>${esc(c.neighborhood)}</td>
@@ -181,7 +181,7 @@
           <td>${esc(c.cost_per_week)}</td>
           <td>${esc(c.signup_opens)}</td>
           <td>${aid}</td>
-          <td>${c.signup_url ? `<a href="${safeUrl(c.signup_url)}" target="_blank" rel="noopener">Register →</a>` : '—'}</td>
+          <td>${c.signup_url ? `<a href="${esc(safeUrl(c.signup_url))}" target="_blank" rel="noopener">Register →</a>` : '—'}</td>
           <td>${yearCell}</td>
         `;
         tbody.appendChild(tr);

@@ -1,7 +1,7 @@
 import json
 import os
 from unittest.mock import MagicMock, patch
-from scraper.scraper import MAX_HOPS, scrape_source, run_scraper
+from scraper.scraper import MAX_HOPS, safe_follow_url, scrape_source, run_scraper
 
 
 def _make_client() -> MagicMock:
@@ -65,6 +65,40 @@ def test_scrape_source_respects_max_depth():
         result = scrape_source(source, _make_client())
 
     assert hop == MAX_HOPS
+
+
+def test_safe_follow_url_allows_same_origin_links():
+    source_url = "https://example.com/camps"
+    current_url = "https://example.com/camps/summer"
+
+    assert safe_follow_url(source_url, current_url, "/register#top") == "https://example.com/register"
+
+
+def test_safe_follow_url_rejects_cross_origin_and_non_http_links():
+    source_url = "https://example.com/camps"
+    current_url = "https://example.com/camps/summer"
+
+    assert safe_follow_url(source_url, current_url, "https://attacker.test/collect") is None
+    assert safe_follow_url(source_url, current_url, "javascript:alert(1)") is None
+
+
+def test_scrape_source_skips_cross_origin_follow_up_urls():
+    source = {"name": "Test Org", "url": "https://example.com"}
+
+    call_count = 0
+    def fake_extract(client, url, org, content):
+        nonlocal call_count
+        call_count += 1
+        return _extractor_result(
+            follow_ups=["https://attacker.test/collect"],
+            sufficient=False,
+        )
+
+    with patch("scraper.scraper.fetch_page", return_value="content"), \
+         patch("scraper.scraper.extract_camps", side_effect=fake_extract):
+        scrape_source(source, _make_client())
+
+    assert call_count == 1
 
 
 def test_scrape_source_skips_visited_urls():

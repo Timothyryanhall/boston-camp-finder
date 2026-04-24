@@ -1,66 +1,66 @@
 SOURCES: list[dict] = [
     {
         "name": "Boston Nature Center",
-        "url": "https://www.massaudubon.org/get-outdoors/wildlife-sanctuaries/boston-nature-center/programs-events/camps",
+        "url": "https://www.massaudubon.org/places-to-explore/wildlife-sanctuaries/boston-nature-center/camp",
     },
     {
         "name": "YMCA Greater Boston",
-        "url": "https://www.ymcaboston.org/programs/camps",
+        "url": "https://ymcaboston.org/youth-and-family/camps/day-camps/",
     },
     {
         "name": "Girl Scouts of Eastern Massachusetts",
-        "url": "https://www.gscm.org/en/camp.html",
+        "url": "https://www.gsema.org/en/activities-and-camp/summer-camp.html",
     },
     {
-        "name": "Create Art for All",
-        "url": "https://www.createartforall.org/programs/summer-camps/",
+        "name": "Create Art in Community",
+        "url": "https://www.createartincommunity.com/kids",
     },
     {
         "name": "Franklin Park Zoo",
-        "url": "https://www.zoonewengland.org/franklin-park-zoo/education/camps",
+        "url": "https://www.zoonewengland.org/discover/zoocamp/",
     },
     {
         "name": "Broderick's Gymnastics",
-        "url": "https://brodericksgym.com/programs/camps/",
+        "url": "https://broderickgym.com/",
     },
     {
         "name": "Viking Sports",
-        "url": "https://www.vikingsports.com/programs/camps/",
+        "url": "https://www.vikingcamps.com/locations/boston/",
     },
     {
-        "name": "Commonwealth Circus School",
-        "url": "https://www.commonwealthcircusschool.com/camps",
+        "name": "Commonwealth Circus Center",
+        "url": "https://commonwealthcircus.com/youth-programs/",
     },
     {
         "name": "Boston Centers for Youth & Families",
-        "url": "https://www.boston.gov/departments/boston-centers-youth-families/bcyf-summer-camps",
+        "url": "https://www.boston.gov/departments/boston-centers-youth-families/summer-programs-and-events-bcyf",
     },
     {
         "name": "Camp Harbor View",
-        "url": "https://www.campharborview.org/programs/",
+        "url": "https://campharborview.org/summer-camp/",
     },
     {
         "name": "New England Aquarium",
-        "url": "https://www.neaq.org/education/camp-sea-life/",
+        "url": "https://www.neaq.org/learn/summer-camps/",
     },
     {
         "name": "Museum of Science",
-        "url": "https://www.mos.org/camps",
+        "url": "https://www.mos.org/teaching-stem/youth-programs",
     },
     {
         "name": "JCC Greater Boston",
-        "url": "https://www.jccgb.org/camps",
+        "url": "https://www.bostonjcc.org/campsataglance/",
     },
     {
         "name": "Zumix",
-        "url": "https://www.zumix.org/programs/camps/",
+        "url": "https://www.zumix.org/programs/",
     },
     {
         "name": "Tenacity",
-        "url": "https://tenacity.org/programs/",
+        "url": "https://tenacity.org/summer-tennis-reading-program-boston/",
     },
     {
         "name": "Berklee City Music",
-        "url": "https://www.berklee.edu/city-music/programs",
+        "url": "https://summer.berklee.edu/",
     },
 ]

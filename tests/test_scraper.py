@@ -1,7 +1,7 @@
 import json
 import os
 from unittest.mock import MagicMock, patch
-from scraper.scraper import scrape_source, run_scraper
+from scraper.scraper import MAX_HOPS, scrape_source, run_scraper
 
 
 def _make_client() -> MagicMock:
@@ -64,7 +64,7 @@ def test_scrape_source_respects_max_depth():
          patch("scraper.scraper.extract_camps", side_effect=fake_extract):
         result = scrape_source(source, _make_client())
 
-    assert hop == 3
+    assert hop == MAX_HOPS
 
 
 def test_scrape_source_skips_visited_urls():

@@ -31,7 +31,9 @@ def scrape_source(source: dict, client: anthropic.Anthropic) -> list[dict]:
             hop += 1
             continue
 
+        print(f"  [fetched] {url} ({len(content)} chars)")
         result = extract_camps(client, url, source["name"], content)
+        print(f"  [claude] camps={len(result.get('camps', []))}, sufficient={result.get('has_sufficient_data')}, follow_ups={result.get('follow_up_urls', [])}")
 
         for camp in result.get("camps", []):
             camp["last_scraped"] = datetime.now(timezone.utc).isoformat()

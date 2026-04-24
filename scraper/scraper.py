@@ -1,6 +1,8 @@
 import json
 import time
 from datetime import datetime, timezone
+from typing import Optional
+from urllib.parse import urldefrag, urljoin, urlparse
 
 import anthropic
 
@@ -10,6 +12,19 @@ from scraper.geocoder import distance_from_roslindale
 from scraper.sources import SOURCES
 
 MAX_HOPS = 5
+
+
+def safe_follow_url(source_url: str, current_url: str, follow_url: str) -> Optional[str]:
+    resolved = urljoin(current_url, follow_url)
+    resolved, _ = urldefrag(resolved)
+    source = urlparse(source_url)
+    candidate = urlparse(resolved)
+
+    if candidate.scheme not in ("http", "https"):
+        return None
+    if candidate.netloc.lower() != source.netloc.lower():
+        return None
+    return resolved
 
 
 def scrape_source(source: dict, client: anthropic.Anthropic) -> list[dict]:
@@ -46,8 +61,9 @@ def scrape_source(source: dict, client: anthropic.Anthropic) -> list[dict]:
             break
 
         for follow_url in result.get("follow_up_urls", []):
-            if follow_url not in visited:
-                queue.append(follow_url)
+            safe_url = safe_follow_url(source["url"], url, follow_url)
+            if safe_url and safe_url not in visited:
+                queue.append(safe_url)
 
         hop += 1
         time.sleep(1)

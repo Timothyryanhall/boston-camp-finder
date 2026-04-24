@@ -149,6 +149,71 @@
       border-color: var(--teal);
     }
 
+    .org-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .org-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.84rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .org-btn:hover {
+      background: var(--subtle);
+      border-color: #b8cdd2;
+    }
+
+    .org-btn.active {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: #fff;
+    }
+
+    .org-btn .org-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .org-btn .org-count {
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      opacity: 0.6;
+    }
+
+    .org-btn.active .org-count {
+      opacity: 0.8;
+    }
+
+    .org-clear {
+      color: var(--teal);
+      font-weight: 600;
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .org-clear:hover {
+      background: var(--subtle);
+      border-color: var(--line);
+    }
+
     .map-card {
       display: grid;
       gap: 10px;
@@ -519,10 +584,6 @@
         grid-column: 1 / -1;
       }
 
-      .summary-row {
-        grid-template-columns: 1fr 1fr;
-      }
-
       .results-grid {
         grid-template-columns: 1fr;
       }
@@ -660,6 +721,7 @@
             <option value="2">Within 2 miles</option>
             <option value="5">Within 5 miles</option>
             <option value="7" selected>Within 7 miles</option>
+            <option value="unknown">Distance unknown</option>
           </select>
         </label>
         <label class="field">
@@ -697,6 +759,11 @@
             <option value="current">Current data first</option>
           </select>
         </label>
+
+        <div class="field">
+          <span>Organization</span>
+          <div class="org-list" id="org-list"></div>
+        </div>
 
         <div class="map-card" aria-label="Area overview">
           <div class="map-title">Roslindale area</div>
@@ -749,6 +816,7 @@
   <script>
     let campsData = [];
     let loadError = null;
+    let selectedOrg = null;
 
     async function loadData() {
       const dataUrl = new URL('data.json', window.location.href);
@@ -773,6 +841,42 @@
       updateFooterDate();
     }
 
+    function updateOrgList(camps) {
+      const counts = {};
+      camps.forEach(c => {
+        const org = c.organization || 'Unknown';
+        counts[org] = (counts[org] || 0) + 1;
+      });
+      const orgs = Object.keys(counts).sort((a, b) => a.localeCompare(b));
+
+      if (selectedOrg && !counts[selectedOrg]) selectedOrg = null;
+
+      const container = document.getElementById('org-list');
+      container.innerHTML = '';
+
+      if (selectedOrg) {
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'org-btn org-clear';
+        clearBtn.textContent = '← All organizations';
+        clearBtn.addEventListener('click', () => { selectedOrg = null; applyFilters(); });
+        container.appendChild(clearBtn);
+      }
+
+      orgs.forEach(org => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `org-btn${org === selectedOrg ? ' active' : ''}`;
+        btn.dataset.org = org;
+        btn.innerHTML = `<span class="org-name">${esc(org)}</span><span class="org-count">${counts[org]}</span>`;
+        btn.addEventListener('click', () => {
+          selectedOrg = selectedOrg === org ? null : org;
+          applyFilters();
+        });
+        container.appendChild(btn);
+      });
+    }
+
     function populateTypeFilter() {
       const types = [...new Set(campsData.map(c => c.camp_type).filter(Boolean))].sort();
       const sel = document.getElementById('filter-type');
@@ -795,17 +899,21 @@
 
       const typeFilter = document.getElementById('filter-type').value;
       const ageFilter = parseInt(document.getElementById('filter-age').value, 10);
-      const maxDist = parseFloat(document.getElementById('filter-distance').value) || Infinity;
+      const distVal = document.getElementById('filter-distance').value;
+      const onlyUnknownDist = distVal === 'unknown';
+      const maxDist = distVal && !onlyUnknownDist ? parseFloat(distVal) : Infinity;
       const maxCost = parseFloat(document.getElementById('filter-cost').value) || Infinity;
       const aidFilter = document.getElementById('filter-aid').value;
       const freshnessFilter = document.getElementById('filter-freshness').value;
       const search = document.getElementById('filter-search').value.toLowerCase().trim();
       const sortMode = document.getElementById('sort-camps').value;
 
-      const filtered = campsData.filter(c => {
+      const matchesOtherFilters = c => {
         if (typeFilter && c.camp_type !== typeFilter) return false;
         if (!Number.isNaN(ageFilter) && !ageMatches(c.age_range, ageFilter)) return false;
-        if (maxDist !== Infinity) {
+        if (onlyUnknownDist) {
+          if (c.distance_from_roslindale_miles != null) return false;
+        } else if (maxDist !== Infinity) {
           if (c.distance_from_roslindale_miles == null || c.distance_from_roslindale_miles > maxDist) return false;
         }
         if (maxCost !== Infinity && firstDollarAmount(c.cost_per_week) > maxCost) return false;
@@ -818,13 +926,25 @@
           if (!hay.includes(search)) return false;
         }
         return true;
-      });
+      };
+
+      const withoutOrg = campsData.filter(matchesOtherFilters);
+      updateOrgList(withoutOrg);
+      const filtered = selectedOrg ? withoutOrg.filter(c => c.organization === selectedOrg) : withoutOrg;
 
       filtered.sort((a, b) => compareCamps(a, b, sortMode));
       renderCards(filtered);
       updateStats(filtered);
       document.getElementById('result-count').textContent =
         `Showing ${filtered.length} of ${campsData.length} camps`;
+    }
+
+    function updateStats(camps) {
+      const latestYear = Math.max(...camps.map(c => Number(c.data_year)).filter(Boolean));
+      document.getElementById('stat-showing').textContent = camps.length;
+      document.getElementById('stat-aid').textContent = camps.filter(c => c.financial_aid_available === true).length;
+      document.getElementById('stat-close').textContent = camps.filter(c => c.distance_from_roslindale_miles != null && c.distance_from_roslindale_miles <= 2).length;
+      document.getElementById('stat-updated').textContent = Number.isFinite(latestYear) ? latestYear : '--';
     }
 
     function compareCamps(a, b, sortMode) {
@@ -924,15 +1044,7 @@
       });
     }
 
-    function updateStats(camps) {
-      const latestYear = Math.max(...camps.map(c => Number(c.data_year)).filter(Boolean));
-      document.getElementById('stat-showing').textContent = camps.length;
-      document.getElementById('stat-aid').textContent = camps.filter(c => c.financial_aid_available === true).length;
-      document.getElementById('stat-close').textContent = camps.filter(c => c.distance_from_roslindale_miles != null && c.distance_from_roslindale_miles <= 2).length;
-      document.getElementById('stat-updated').textContent = Number.isFinite(latestYear) ? latestYear : '--';
-    }
-
-    function updateFooterDate() {
+function updateFooterDate() {
       const dates = campsData.map(c => c.last_scraped).filter(Boolean).sort();
       if (!dates.length) return;
 

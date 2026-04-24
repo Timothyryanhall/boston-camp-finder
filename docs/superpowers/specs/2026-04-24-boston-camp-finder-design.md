@@ -108,7 +108,7 @@ After all sources are processed, write the full list to `data.json`.
 
 **Claude prompt approach:** Each call asks Claude to extract all available fields and identify relevant follow-up links. Claude sets `data_is_stale: true` and uses the prior `data_year` when information appears to be from a previous year.
 
-**Cost estimate:** ~9 Claude API calls per source (worst case, 3 hops × some sources), 16 sources, weekly = well under $1/week at current API pricing.
+**Cost estimate:** Up to 3 Claude API calls per source (one per hop), 16 sources, weekly = up to 48 calls/week, well under $1/week at current API pricing.
 
 **`ANTHROPIC_API_KEY`** is stored as a GitHub Actions secret. Never committed to the repo.
 

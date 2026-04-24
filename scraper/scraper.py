@@ -9,7 +9,7 @@ from scraper.fetcher import fetch_page
 from scraper.geocoder import distance_from_roslindale
 from scraper.sources import SOURCES
 
-MAX_HOPS = 3
+MAX_HOPS = 5
 
 
 def scrape_source(source: dict, client: anthropic.Anthropic) -> list[dict]:

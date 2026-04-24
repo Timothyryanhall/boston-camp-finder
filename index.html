@@ -82,13 +82,24 @@
 
   <script>
     let campsData = [];
+    let loadError = null;
 
     async function loadData() {
+      const dataUrl = new URL('data.json', window.location.href);
+      dataUrl.searchParams.set('v', Date.now());
+
       try {
-        const res = await fetch('data.json');
-        campsData = await res.json();
+        const res = await fetch(dataUrl, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status} fetching data.json`);
+
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('data.json did not contain a camp list');
+
+        campsData = data;
+        loadError = null;
       } catch (e) {
         campsData = [];
+        loadError = e;
       }
       populateTypeFilter();
       applyFilters();
@@ -98,6 +109,7 @@
     function populateTypeFilter() {
       const types = [...new Set(campsData.map(c => c.camp_type).filter(Boolean))].sort();
       const sel = document.getElementById('filter-type');
+      sel.querySelectorAll('option:not([value=""])').forEach(opt => opt.remove());
       types.forEach(t => {
         const opt = document.createElement('option');
         opt.value = t;
@@ -107,6 +119,12 @@
     }
 
     function applyFilters() {
+      if (loadError) {
+        renderLoadError(loadError);
+        document.getElementById('result-count').textContent = 'Unable to load camp data';
+        return;
+      }
+
       const typeFilter = document.getElementById('filter-type').value;
       const maxDist = parseFloat(document.getElementById('filter-distance').value) || Infinity;
       const search = document.getElementById('filter-search').value.toLowerCase().trim();
@@ -192,6 +210,11 @@
         document.getElementById('footer-last-scraped').textContent =
           ` Last scraped: ${d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.`;
       }
+    }
+
+    function renderLoadError(error) {
+      const tbody = document.getElementById('camp-tbody');
+      tbody.innerHTML = `<tr><td colspan="13" style="text-align:center;padding:2rem;color:#b00020">Error loading data: ${esc(error.message)}</td></tr>`;
     }
 
     document.getElementById('filter-type').addEventListener('change', applyFilters);

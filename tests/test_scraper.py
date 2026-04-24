@@ -1,7 +1,14 @@
 import json
 import os
 from unittest.mock import MagicMock, patch
-from scraper.scraper import MAX_HOPS, safe_follow_url, scrape_source, run_scraper
+from scraper.scraper import (
+    MAX_HOPS,
+    load_manual_camps,
+    merge_manual_camps,
+    safe_follow_url,
+    scrape_source,
+    run_scraper,
+)
 
 
 def _make_client() -> MagicMock:
@@ -143,9 +150,32 @@ def test_run_scraper_writes_data_json(tmp_path):
 
     with patch("scraper.scraper.SOURCES", sources), \
          patch("scraper.scraper.fetch_page", return_value="content"), \
-         patch("scraper.scraper.extract_camps", return_value=_extractor_result(camps=[camp], sufficient=True)):
+         patch("scraper.scraper.extract_camps", return_value=_extractor_result(camps=[camp], sufficient=True)), \
+         patch("scraper.scraper.load_manual_camps", return_value=[]):
         run_scraper(output_path=str(output))
 
     data = json.loads(output.read_text())
     assert len(data) == 1
     assert data[0]["camp_name"] == "Camp A"
+
+
+def test_load_manual_camps_reads_json_list(tmp_path):
+    manual_path = tmp_path / "manual_camps.json"
+    manual_path.write_text(json.dumps([{"camp_name": "Manual Camp", "organization": "Org"}]))
+
+    assert load_manual_camps(manual_path) == [{"camp_name": "Manual Camp", "organization": "Org"}]
+
+
+def test_merge_manual_camps_adds_new_records_and_skips_duplicates():
+    scraped = [{"camp_name": "Camp A", "organization": "Org"}]
+    manual = [
+        {"camp_name": "Camp A", "organization": "Org"},
+        {"camp_name": "Manual Camp", "organization": "Manual Org"},
+    ]
+
+    merged = merge_manual_camps(scraped, manual)
+
+    assert merged == [
+        {"camp_name": "Camp A", "organization": "Org"},
+        {"camp_name": "Manual Camp", "organization": "Manual Org"},
+    ]

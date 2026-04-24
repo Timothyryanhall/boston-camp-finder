@@ -1,6 +1,7 @@
 import json
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 from urllib.parse import urldefrag, urljoin, urlparse
 
@@ -12,6 +13,7 @@ from scraper.geocoder import distance_from_roslindale
 from scraper.sources import SOURCES
 
 MAX_HOPS = 5
+MANUAL_CAMPS_PATH = Path(__file__).with_name("manual_camps.json")
 
 
 def safe_follow_url(source_url: str, current_url: str, follow_url: str) -> Optional[str]:
@@ -71,6 +73,40 @@ def scrape_source(source: dict, client: anthropic.Anthropic) -> list[dict]:
     return all_camps
 
 
+def _camp_key(camp: dict) -> tuple[str, str]:
+    return (
+        str(camp.get("organization") or "").strip().lower(),
+        str(camp.get("camp_name") or "").strip().lower(),
+    )
+
+
+def load_manual_camps(path: Path = MANUAL_CAMPS_PATH) -> list[dict]:
+    if not path.exists():
+        return []
+
+    with path.open() as f:
+        data = json.load(f)
+
+    if not isinstance(data, list):
+        raise ValueError(f"{path} must contain a list of camp records")
+
+    return data
+
+
+def merge_manual_camps(scraped_camps: list[dict], manual_camps: list[dict]) -> list[dict]:
+    merged = list(scraped_camps)
+    seen = {_camp_key(camp) for camp in merged}
+
+    for camp in manual_camps:
+        key = _camp_key(camp)
+        if key in seen:
+            continue
+        merged.append(camp)
+        seen.add(key)
+
+    return merged
+
+
 def run_scraper(output_path: str = "data.json") -> None:
     client = anthropic.Anthropic()
     all_camps: list[dict] = []
@@ -81,6 +117,11 @@ def run_scraper(output_path: str = "data.json") -> None:
         print(f"  -> {len(camps)} camp(s) found")
         all_camps.extend(camps)
         time.sleep(2)
+
+    manual_camps = load_manual_camps()
+    if manual_camps:
+        all_camps = merge_manual_camps(all_camps, manual_camps)
+        print(f"  -> merged {len(manual_camps)} manual camp(s)")
 
     with open(output_path, "w") as f:
         json.dump(all_camps, f, indent=2)

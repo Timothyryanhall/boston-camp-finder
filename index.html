@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boston Camp Finder</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1400px; margin: 0 auto; padding: 1rem; color: #222; }
+    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #555; margin-bottom: 1.25rem; font-size: 0.95rem; }
+    .filters { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; align-items: center; }
+    .filters label { font-size: 0.85rem; color: #444; }
+    .filters select, .filters input { padding: 0.35rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { background: #f0f0f0; text-align: left; padding: 0.5rem 0.6rem; border-bottom: 2px solid #ccc; white-space: nowrap; }
+    td { padding: 0.45rem 0.6rem; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
+    tr:hover td { background: #fafafa; }
+    tr.stale td { background: #fffde7; }
+    tr.stale:hover td { background: #fff9c4; }
+    a { color: #1a73e8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.75rem; font-weight: 600; cursor: help; }
+    .stale-badge { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+    .current-badge { background: #d4edda; color: #155724; border: 1px solid #28a745; }
+    .count { color: #555; font-size: 0.9rem; margin-bottom: 0.5rem; }
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee; color: #777; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <h1>Boston Camp Finder</h1>
+  <p class="subtitle">Kids' camps near Roslindale, aggregated weekly from 16 Boston-area organizations. Always verify details directly with the camp.</p>
+
+  <div class="filters">
+    <label>
+      Type:
+      <select id="filter-type">
+        <option value="">All types</option>
+      </select>
+    </label>
+    <label>
+      Max distance:
+      <select id="filter-distance">
+        <option value="">Any distance</option>
+        <option value="2">Within 2 miles</option>
+        <option value="5">Within 5 miles</option>
+        <option value="7" selected>Within 7 miles</option>
+      </select>
+    </label>
+    <label>
+      Search:
+      <input type="text" id="filter-search" placeholder="Camp name or organization…" style="width:220px" />
+    </label>
+  </div>
+
+  <div class="count" id="result-count"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Camp Name</th>
+        <th>Organization</th>
+        <th>Type</th>
+        <th>Neighborhood</th>
+        <th>Distance</th>
+        <th>Ages</th>
+        <th>Hours</th>
+        <th>Weeks Available</th>
+        <th>Cost/Week</th>
+        <th>Signup Opens</th>
+        <th>Aid?</th>
+        <th>Register</th>
+        <th>Data Year</th>
+      </tr>
+    </thead>
+    <tbody id="camp-tbody"></tbody>
+  </table>
+
+  <footer>
+    Data scraped weekly via GitHub Actions using Claude. Information may be from a prior year — check directly with each camp before registering.
+    <span id="footer-last-scraped"></span>
+  </footer>
+
+  <script>
+    let campsData = [];
+
+    async function loadData() {
+      try {
+        const res = await fetch('data.json');
+        campsData = await res.json();
+      } catch (e) {
+        campsData = [];
+      }
+      populateTypeFilter();
+      applyFilters();
+      updateFooterDate();
+    }
+
+    function populateTypeFilter() {
+      const types = [...new Set(campsData.map(c => c.camp_type).filter(Boolean))].sort();
+      const sel = document.getElementById('filter-type');
+      types.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t;
+        opt.textContent = t;
+        sel.appendChild(opt);
+      });
+    }
+
+    function applyFilters() {
+      const typeFilter = document.getElementById('filter-type').value;
+      const maxDist = parseFloat(document.getElementById('filter-distance').value) || Infinity;
+      const search = document.getElementById('filter-search').value.toLowerCase().trim();
+
+      const filtered = campsData.filter(c => {
+        if (typeFilter && c.camp_type !== typeFilter) return false;
+        if (c.distance_from_roslindale_miles != null && c.distance_from_roslindale_miles > maxDist) return false;
+        if (search) {
+          const hay = `${c.camp_name || ''} ${c.organization || ''}`.toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      renderTable(filtered);
+      document.getElementById('result-count').textContent =
+        `Showing ${filtered.length} of ${campsData.length} camps`;
+    }
+
+    function renderTable(camps) {
+      const tbody = document.getElementById('camp-tbody');
+      tbody.innerHTML = '';
+
+      if (!camps.length) {
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:2rem;color:#888">No camps match your filters.</td></tr>';
+        return;
+      }
+
+      camps.forEach(c => {
+        const tr = document.createElement('tr');
+        if (c.data_is_stale) tr.classList.add('stale');
+
+        const dist = c.distance_from_roslindale_miles != null
+          ? `${c.distance_from_roslindale_miles} mi` : '—';
+
+        const yearCell = c.data_is_stale
+          ? `<span class="badge stale-badge" title="Info from ${c.data_year}. Verify with camp directly.">${c.data_year} ⚠</span>`
+          : `<span class="badge current-badge">${c.data_year || '—'}</span>`;
+
+        const aid = c.financial_aid_available === true ? 'Yes'
+          : c.financial_aid_available === false ? 'No' : '—';
+
+        tr.innerHTML = `
+          <td><a href="${esc(c.website_url)}" target="_blank" rel="noopener">${esc(c.camp_name)}</a></td>
+          <td>${esc(c.organization)}</td>
+          <td>${esc(c.camp_type)}</td>
+          <td>${esc(c.neighborhood)}</td>
+          <td>${dist}</td>
+          <td>${esc(c.age_range)}</td>
+          <td>${esc(c.hours_of_day)}</td>
+          <td>${esc(c.weeks_available)}</td>
+          <td>${esc(c.cost_per_week)}</td>
+          <td>${esc(c.signup_opens)}</td>
+          <td>${aid}</td>
+          <td>${c.signup_url ? `<a href="${esc(c.signup_url)}" target="_blank" rel="noopener">Register →</a>` : '—'}</td>
+          <td>${yearCell}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function esc(val) {
+      if (val == null) return '—';
+      return String(val)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function updateFooterDate() {
+      const dates = campsData.map(c => c.last_scraped).filter(Boolean).sort();
+      if (dates.length) {
+        const d = new Date(dates[dates.length - 1]);
+        document.getElementById('footer-last-scraped').textContent =
+          ` Last scraped: ${d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.`;
+      }
+    }
+
+    document.getElementById('filter-type').addEventListener('change', applyFilters);
+    document.getElementById('filter-distance').addEventListener('change', applyFilters);
+    document.getElementById('filter-search').addEventListener('input', applyFilters);
+
+    loadData();
+  </script>
+</body>
+</html>

@@ -2,7 +2,7 @@ name: Scrape Camp Data
 
 on:
   schedule:
-    - cron: '0 11 * * 0'   # Sundays 6am ET (UTC-5 in winter, UTC-4 in summer)
+    - cron: '0 11 * * 0'   # Sundays; scheduled scraper runs only on even ISO weeks
   workflow_dispatch:          # enable manual trigger from GitHub Actions tab
 
 jobs:
@@ -16,20 +16,40 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Check biweekly schedule
+        id: biweekly
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          week="$(date -u '+%V')"
+          if [ $((10#$week % 2)) -eq 0 ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping scheduled scrape on odd ISO week $week"
+          fi
+
       - name: Set up Python 3.13
+        if: steps.biweekly.outputs.should_run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
 
       - name: Install dependencies
+        if: steps.biweekly.outputs.should_run == 'true'
         run: pip install -r requirements.txt
 
       - name: Run scraper
+        if: steps.biweekly.outputs.should_run == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python -m scraper.scraper
 
       - name: Commit updated data.json
+        if: steps.biweekly.outputs.should_run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -1,10 +1,10 @@
 # Boston Camp Finder
 
-Weekly-updated aggregator of kids' camps near Roslindale, MA.
+Biweekly-updated aggregator of kids' camps near Roslindale, MA.
 
 **Live site:** https://timothyryanhall.github.io/boston-camp-finder/
 
-Data is scraped every Sunday from 16 Boston-area organizations using Claude for extraction.
+Data is scraped every other Sunday from 16 Boston-area organizations using Claude for extraction.
 To add a new source, add one entry to `scraper/sources.py`.
 
 ## Setup

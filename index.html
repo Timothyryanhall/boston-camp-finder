@@ -113,7 +113,9 @@
 
       const filtered = campsData.filter(c => {
         if (typeFilter && c.camp_type !== typeFilter) return false;
-        if (c.distance_from_roslindale_miles != null && c.distance_from_roslindale_miles > maxDist) return false;
+        if (maxDist !== Infinity) {
+          if (c.distance_from_roslindale_miles == null || c.distance_from_roslindale_miles > maxDist) return false;
+        }
         if (search) {
           const hay = `${c.camp_name || ''} ${c.organization || ''}`.toLowerCase();
           if (!hay.includes(search)) return false;
@@ -150,7 +152,7 @@
           : c.financial_aid_available === false ? 'No' : '—';
 
         tr.innerHTML = `
-          <td><a href="${esc(c.website_url)}" target="_blank" rel="noopener">${esc(c.camp_name)}</a></td>
+          <td><a href="${safeUrl(c.website_url)}" target="_blank" rel="noopener">${esc(c.camp_name)}</a></td>
           <td>${esc(c.organization)}</td>
           <td>${esc(c.camp_type)}</td>
           <td>${esc(c.neighborhood)}</td>
@@ -161,7 +163,7 @@
           <td>${esc(c.cost_per_week)}</td>
           <td>${esc(c.signup_opens)}</td>
           <td>${aid}</td>
-          <td>${c.signup_url ? `<a href="${esc(c.signup_url)}" target="_blank" rel="noopener">Register →</a>` : '—'}</td>
+          <td>${c.signup_url ? `<a href="${safeUrl(c.signup_url)}" target="_blank" rel="noopener">Register →</a>` : '—'}</td>
           <td>${yearCell}</td>
         `;
         tbody.appendChild(tr);
@@ -175,6 +177,12 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+    }
+
+    function safeUrl(val) {
+      if (val == null) return '#';
+      const s = String(val).trim();
+      return /^https?:\/\//i.test(s) ? s : '#';
     }
 
     function updateFooterDate() {

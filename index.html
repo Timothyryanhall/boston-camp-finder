@@ -747,7 +747,22 @@ function App() {
           <div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
               <h1 style={{ fontSize: 20, fontWeight: 800, color: T.ink, letterSpacing: '-0.02em' }}>Boston Camp Finder</h1>
-              <span style={{ fontSize: 13, color: T.muted, fontWeight: 500 }}>Roslindale & nearby</span>
+              <select defaultValue="roslindale" style={{
+                fontSize: 13, fontWeight: 600, color: accent,
+                background: T.tealLight, border: `1px solid ${T.tealLight}`,
+                borderRadius: 999, padding: '2px 8px',
+                fontFamily: 'inherit', cursor: 'pointer', appearance: 'none',
+                WebkitAppearance: 'none',
+              }}>
+                <option value="roslindale">📍 Roslindale</option>
+                <optgroup label="More neighborhoods coming soon…">
+                  <option disabled>Jamaica Plain</option>
+                  <option disabled>West Roxbury</option>
+                  <option disabled>Dorchester</option>
+                  <option disabled>Hyde Park</option>
+                  <option disabled>Mattapan</option>
+                </optgroup>
+              </select>
             </div>
           </div>
           <div style={{ fontSize: 12, color: T.muted, textAlign: 'right', display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -908,9 +923,6 @@ function App() {
         {/* ── Results ── */}
         <main>
           {/* Reminder + Stats row */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-            <ReminderBadge />
-          </div>
           <div style={{
               display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
               marginBottom: 20,
@@ -937,9 +949,12 @@ function App() {
           </div>
 
           {/* Result count + list header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 12, flexWrap: 'wrap' }}>
             <div style={{ fontSize: 13, color: T.muted }}>
               {error ? 'Error loading data' : `Showing ${filtered.length} of ${camps.length} camps`}
+            </div>
+            <div style={{ fontSize: 12, color: T.muted, fontStyle: 'italic', textAlign: 'right', maxWidth: 340 }}>
+              This is a starting point — always verify dates, cost, and availability directly with each camp before registering.
             </div>
           </div>
 

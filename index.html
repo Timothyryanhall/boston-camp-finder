@@ -651,6 +651,58 @@ function MapLayout({ camps, accent, activePin, setActivePin }) {
   );
 }
 
+// ── Suggest a Camp ────────────────────────────────────────────────────────────
+function SuggestCampBox({ accent }) {
+  const [value, setValue] = useState('');
+
+  function submit(e) {
+    e.preventDefault();
+    const name = value.trim();
+    if (!name) return;
+    const title = encodeURIComponent(`Camp suggestion: ${name}`);
+    const body = encodeURIComponent(
+      `Hi! I'd like to suggest adding this camp to Boston Camp Finder:\n\n` +
+      `**Camp name or URL:** ${name}\n\n` +
+      `**Any additional details:**\n`
+    );
+    window.open(
+      `https://github.com/Timothyryanhall/boston-camp-finder/issues/new?title=${title}&body=${body}`,
+      '_blank', 'noopener'
+    );
+    setValue('');
+  }
+
+  return (
+    <div style={{
+      borderTop: `1px solid ${T.borderLight}`, paddingTop: 14, marginTop: 4,
+    }}>
+      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: T.muted, marginBottom: 8 }}>
+        Know a camp we're missing?
+      </div>
+      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <input
+          type="text"
+          placeholder="Camp name or website URL"
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          style={{ ...inputStyle, fontSize: 12 }}
+        />
+        <button type="submit" disabled={!value.trim()} style={{
+          padding: '7px 12px', borderRadius: T.radiusSm,
+          background: value.trim() ? accent : T.border,
+          color: value.trim() ? '#fff' : T.muted,
+          border: 'none', fontSize: 12, fontWeight: 700,
+          cursor: value.trim() ? 'pointer' : 'default',
+          fontFamily: 'inherit', transition: 'background 0.15s',
+        }}>Suggest it →</button>
+      </form>
+      <div style={{ fontSize: 11, color: T.muted, marginTop: 6, lineHeight: 1.5 }}>
+        Opens a GitHub issue. Requires a free GitHub account.
+      </div>
+    </div>
+  );
+}
+
 // ── Main App ───────────────────────────────────────────────────────────────────
 function App() {
   const cardLayout = CARD_LAYOUT;
@@ -908,7 +960,8 @@ function App() {
               </div>
             </div>
 
-  
+            <SuggestCampBox accent={accent} />
+
           </div>
           {isMobile && (
             <button onClick={() => setMobileFiltersOpen(false)} style={{

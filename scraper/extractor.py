@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import date
 from typing import Any
 
@@ -70,6 +71,8 @@ def extract_camps(
             messages=[{"role": "user", "content": prompt}],
         )
         text = message.content[0].text.strip()
+        text = re.sub(r'^```(?:json)?\s*', '', text)
+        text = re.sub(r'\s*```$', '', text)
         return json.loads(text)
     except json.JSONDecodeError as e:
         preview = text[:200] if text else "<empty>"

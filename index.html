@@ -767,7 +767,7 @@ function FeedbackBox() {
                 value={notes} onChange={e => setNotes(e.target.value)} rows={3}
                 style={{ ...inputStyle, padding: '8px 10px', resize: 'vertical', minHeight: 72 }}
               />
-              <button type="submit" disabled={status === 'submitting'} style={submitBtnStyle}>
+              <button type="submit" disabled={!campName.trim() || status === 'submitting'} style={submitBtnStyle}>
                 {status === 'submitting' ? 'Sending…' : 'Submit suggestion'}
               </button>
             </form>

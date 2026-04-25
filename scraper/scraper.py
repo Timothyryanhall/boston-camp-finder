@@ -130,7 +130,13 @@ def run_scraper(output_path: str = "data.json") -> None:
     with open(output_path, "w") as f:
         json.dump(all_camps, f, indent=2)
 
-    print(f"\nDone. Wrote {len(all_camps)} total camps to {output_path}")
+    history_dir = Path(output_path).parent / "history"
+    history_dir.mkdir(exist_ok=True)
+    history_path = history_dir / f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    with open(history_path, "w") as f:
+        json.dump(all_camps, f, indent=2)
+
+    print(f"\nDone. Wrote {len(all_camps)} total camps to {output_path} and {history_path}")
 
 
 if __name__ == "__main__":

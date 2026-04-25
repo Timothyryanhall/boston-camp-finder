@@ -1,7 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 
-// validate is not defined yet — all tests will fail
 const { validate } = require('./validate');
 
 test('rejects missing body', () => {

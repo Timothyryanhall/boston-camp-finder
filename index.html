@@ -661,7 +661,7 @@ function FeedbackBox() {
   const [feedbackText, setFeedbackText] = React.useState('');
   const [status, setStatus] = React.useState('idle'); // 'idle'|'submitting'|'success'|'error'
 
-  async function post(body) {
+  async function post(body, onSuccess) {
     setStatus('submitting');
     try {
       const res = await fetch('/api/submit', {
@@ -670,6 +670,7 @@ function FeedbackBox() {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error();
+      onSuccess();
       setStatus('success');
     } catch {
       setStatus('error');
@@ -678,14 +679,18 @@ function FeedbackBox() {
 
   function submitSuggestion(e) {
     e.preventDefault();
-    post({ type: 'suggestion', camp_name: campName, camp_url: campUrl, notes });
-    setCampName(''); setCampUrl(''); setNotes('');
+    post(
+      { type: 'suggestion', camp_name: campName, camp_url: campUrl, notes },
+      () => { setCampName(''); setCampUrl(''); setNotes(''); }
+    );
   }
 
   function submitFeedback(e) {
     e.preventDefault();
-    post({ type: 'feedback', notes: feedbackText });
-    setFeedbackText('');
+    post(
+      { type: 'feedback', notes: feedbackText },
+      () => setFeedbackText('')
+    );
   }
 
   const sectionHeaderStyle = {
@@ -704,7 +709,7 @@ function FeedbackBox() {
   const submitBtnStyle = {
     padding: '9px 14px', background: ACCENT, color: '#fff', border: 'none',
     borderRadius: T.radiusSm, fontSize: 13, fontWeight: 700, cursor: 'pointer',
-    fontFamily: 'inherit', opacity: 1,
+    fontFamily: 'inherit',
   };
 
   const backBtnStyle = {
@@ -715,7 +720,11 @@ function FeedbackBox() {
   if (status === 'success') {
     return (
       <div style={{ borderTop: `1px solid ${T.borderLight}`, paddingTop: 12, marginTop: 4 }}>
-        <div style={{ fontSize: 13, color: T.green, fontWeight: 600 }}>Thanks! We'll take a look.</div>
+        <button onClick={() => { setOpen(o => !o); setMode(''); setStatus('idle'); }} style={sectionHeaderStyle}>
+          <span>Feedback &amp; Suggestions</span>
+          <span style={{ fontSize: 16, lineHeight: 1, fontWeight: 400 }}>−</span>
+        </button>
+        <div style={{ marginTop: 10, fontSize: 13, color: T.green, fontWeight: 600 }}>Thanks! We'll take a look.</div>
         <button onClick={() => { setStatus('idle'); setMode(''); }} style={{ ...backBtnStyle, marginTop: 6 }}>
           Submit another
         </button>

@@ -23,6 +23,20 @@
       line-height: 1.5;
     }
     a { color: inherit; text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .finder-layout { grid-template-columns: 1fr !important; }
+      .sidebar-mobile-hidden { display: none; }
+      .sidebar-mobile-overlay {
+        position: fixed; inset: 0; z-index: 200;
+        background: rgba(0,0,0,0.4);
+      }
+      .sidebar-mobile-panel {
+        position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 100vw);
+        z-index: 201; overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+      }
+    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #d4c9bc; border-radius: 999px; }
@@ -717,6 +731,13 @@ function App() {
 
   const CampCard = cardLayout === 'compact' ? CampCardCompact : cardLayout === 'list' ? CampCardList : CampCardComfortable;
   const [activePin, setActivePin] = useState(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   return (
     <div style={{ minHeight: '100vh', background: t.warmth === 'cool' ? '#d8e0e8' : '#e0d8cc' }}>
@@ -737,18 +758,31 @@ function App() {
           <div style={{ fontSize: 12, color: T.muted, textAlign: 'right', display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: accent }}></span>
             {lastScraped ? `Data last updated ${lastScraped}` : 'Loading…'}
+            {isMobile && (
+              <button onClick={() => setMobileFiltersOpen(o => !o)} style={{
+                marginLeft: 12, padding: '6px 14px', border: `1.5px solid ${T.border}`,
+                borderRadius: 20, background: T.panel, color: T.ink,
+                fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>⚙ Filters</button>
+            )}
           </div>
         </div>
       </header>
 
-      <div style={{ maxWidth: 1260, margin: '0 auto', padding: '24px 24px 48px', display: 'grid', gridTemplateColumns: '280px 1fr', gap: 24, alignItems: 'start' }}>
+      {isMobile && mobileFiltersOpen && (
+        <div className="sidebar-mobile-overlay" onClick={() => setMobileFiltersOpen(false)} />
+      )}
+      <div style={{ maxWidth: 1260, margin: '0 auto', padding: '24px 24px 48px', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '280px 1fr', gap: 24, alignItems: 'start' }}>
 
         {/* ── Sidebar ── */}
-        <aside style={{
-          position: 'sticky', top: 73,
-          background: T.panel, borderRadius: T.radius,
+        {(!isMobile || mobileFiltersOpen) && (
+        <aside className={isMobile ? 'sidebar-mobile-panel' : ''} style={{
+          position: isMobile ? 'fixed' : 'sticky', top: isMobile ? 0 : 73,
+          background: T.panel, borderRadius: isMobile ? 0 : T.radius,
           border: `1.5px solid ${T.border}`,
           boxShadow: T.shadow, overflow: 'hidden',
+          zIndex: isMobile ? 201 : 'auto',
         }}>
           {/* Sidebar hero */}
           <div style={{ padding: '18px 18px 14px', borderBottom: `1px solid ${T.borderLight}`, background: accent + '08' }}>
@@ -857,7 +891,15 @@ function App() {
 
   
           </div>
+          {isMobile && (
+            <button onClick={() => setMobileFiltersOpen(false)} style={{
+              width: '100%', padding: '12px', border: 'none',
+              background: accent, color: '#fff',
+              fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+            }}>Show results</button>
+          )}
         </aside>
+        )}
 
         {/* ── Results ── */}
         <main>

@@ -55,7 +55,7 @@ def scrape_source(source: dict, client: anthropic.Anthropic) -> list[dict]:
         for camp in result.get("camps", []):
             camp["last_scraped"] = datetime.now(timezone.utc).isoformat()
             camp["distance_from_roslindale_miles"] = distance_from_roslindale(
-                camp.get("address"), camp.get("neighborhood")
+                camp.get("address"), camp.get("neighborhood"), camp.get("organization")
             )
             all_camps.append(camp)
 

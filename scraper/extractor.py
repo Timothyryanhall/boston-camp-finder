@@ -67,7 +67,7 @@ def extract_camps(
     try:
         message = client.messages.create(
             model="claude-haiku-4-5",
-            max_tokens=4096,
+            max_tokens=8192,
             messages=[{"role": "user", "content": prompt}],
         )
         text = message.content[0].text.strip()

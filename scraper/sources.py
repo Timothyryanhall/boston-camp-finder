@@ -8,10 +8,6 @@ SOURCES: list[dict] = [
         "url": "https://ymcaboston.org/youth-and-family/camps/day-camps/",
     },
     {
-        "name": "Girl Scouts of Eastern Massachusetts",
-        "url": "https://www.gsema.org/en/activities-and-camp/summer-camp.html",
-    },
-    {
         "name": "Create Art in Community",
         "url": "https://www.createartincommunity.com/kids",
     },

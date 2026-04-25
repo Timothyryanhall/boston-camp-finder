@@ -3,6 +3,11 @@ from typing import Optional
 
 ROSLINDALE_CENTROID = (42.2834, -71.1270)
 
+ORG_ADDRESS_FALLBACK: dict[str, str] = {
+    "eliot school of fine arts": "24 Eliot St, Jamaica Plain, MA 02130",
+    "boston children's museum": "308 Congress St, Boston, MA 02210",
+}
+
 NEIGHBORHOOD_CENTROIDS: dict[str, tuple[float, float]] = {
     "roslindale": (42.2834, -71.1270),
     "jamaica plain": (42.3109, -71.1132),
@@ -52,7 +57,9 @@ def _geocode_address(address: str) -> Optional[tuple[float, float]]:
 
 
 def distance_from_roslindale(
-    address: Optional[str], neighborhood: Optional[str]
+    address: Optional[str],
+    neighborhood: Optional[str],
+    organization: Optional[str] = None,
 ) -> Optional[float]:
     if address:
         coords = _geocode_address(address)
@@ -63,6 +70,13 @@ def distance_from_roslindale(
         key = neighborhood.lower().strip()
         for name, coords in NEIGHBORHOOD_CENTROIDS.items():
             if name in key or key in name:
+                return _haversine_miles(*ROSLINDALE_CENTROID, *coords)
+
+    if organization:
+        fallback_addr = ORG_ADDRESS_FALLBACK.get(organization.lower().strip())
+        if fallback_addr:
+            coords = _geocode_address(fallback_addr)
+            if coords:
                 return _haversine_miles(*ROSLINDALE_CENTROID, *coords)
 
     return None

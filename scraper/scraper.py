@@ -118,6 +118,10 @@ def run_scraper(output_path: str = "data.json") -> None:
         all_camps.extend(camps)
         time.sleep(2)
 
+    if not all_camps:
+        print("\n[abort] Web scraping returned 0 camps — API or network issue likely. Not overwriting data.json.")
+        raise SystemExit(1)
+
     manual_camps = load_manual_camps()
     if manual_camps:
         all_camps = merge_manual_camps(all_camps, manual_camps)

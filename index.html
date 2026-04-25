@@ -193,6 +193,7 @@ const SEASON_MONTHS = {
   spring: /\b(march|april|may)\b/i,
   summer: /\b(june|july|august)\b/i,
   fall: /\b(september|october|november)\b/i,
+  winter: /\b(december|january|february)\b/i,
 };
 function campMatchesSeason(camp, season) {
   if (!season) return true;
@@ -842,6 +843,7 @@ function App() {
                 <option value="summer">☀️ Summer</option>
                 <option value="spring">🌸 Spring</option>
                 <option value="fall">🍂 Fall</option>
+                <option value="winter">❄️ Winter</option>
               </select>
             </FilterField>
 

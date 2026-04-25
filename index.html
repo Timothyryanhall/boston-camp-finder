@@ -651,6 +651,106 @@ function MapLayout({ camps, accent, activePin, setActivePin }) {
   );
 }
 
+// ── Feedback & Suggestions Box ─────────────────────────────────────────────────
+function FeedbackBox() {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState('');
+  const [campName, setCampName] = useState('');
+  const [campUrl, setCampUrl] = useState('');
+  const [notes, setNotes] = useState('');
+
+  function openGithubIssue(title, body) {
+    const url = `https://github.com/timothyryanhall/boston-camp-finder/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank', 'noopener noreferrer');
+  }
+
+  function submitSuggestion(e) {
+    e.preventDefault();
+    const title = `Camp suggestion: ${campName}`;
+    const body = [
+      `**Camp name:** ${campName}`,
+      campUrl ? `**Website:** ${campUrl}` : null,
+      notes ? `**Notes:** ${notes}` : null,
+      '',
+      '---',
+      '*Submitted via Boston Camp Finder*',
+    ].filter(l => l !== null).join('\n');
+    openGithubIssue(title, body);
+    setCampName(''); setCampUrl(''); setNotes(''); setMode('');
+  }
+
+  function openFeedback() {
+    openGithubIssue('[Feedback] ', '**What would you like to share?**\n\n\n\n---\n*Submitted via Boston Camp Finder*');
+  }
+
+  const btnStyle = {
+    padding: '8px 12px', border: `1.5px solid ${T.border}`, borderRadius: T.radiusSm,
+    background: 'none', cursor: 'pointer', textAlign: 'left',
+    fontSize: 12, fontWeight: 600, color: T.ink, fontFamily: 'inherit', width: '100%',
+    transition: 'border-color 0.15s',
+  };
+
+  return (
+    <div style={{ borderTop: `1px solid ${T.borderLight}`, paddingTop: 12, marginTop: 4 }}>
+      <button onClick={() => { setOpen(o => !o); setMode(''); }} style={{
+        width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0',
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: T.muted,
+      }}>
+        <span>Feedback &amp; Suggestions</span>
+        <span style={{ fontSize: 16, lineHeight: 1, fontWeight: 400 }}>{open ? '−' : '+'}</span>
+      </button>
+
+      {open && (
+        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {mode === '' && (
+            <>
+              <button style={btnStyle} onClick={() => setMode('suggest')}>➕ Suggest a camp</button>
+              <button style={btnStyle} onClick={openFeedback}>💬 Leave feedback</button>
+              <div style={{ fontSize: 11, color: T.muted, lineHeight: 1.5, padding: '4px 2px' }}>
+                Both open a pre-filled GitHub issue. A GitHub account is needed to submit.
+              </div>
+            </>
+          )}
+
+          {mode === 'suggest' && (
+            <form onSubmit={submitSuggestion} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <button type="button" onClick={() => setMode('')} style={{
+                background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+                fontSize: 12, color: T.muted, padding: 0, fontFamily: 'inherit',
+              }}>← Back</button>
+              <input
+                type="text" placeholder="Camp name *" required value={campName}
+                onChange={e => setCampName(e.target.value)}
+                style={inputStyle}
+              />
+              <input
+                type="url" placeholder="Camp website (optional)" value={campUrl}
+                onChange={e => setCampUrl(e.target.value)}
+                style={inputStyle}
+              />
+              <textarea
+                placeholder="Notes — age range, neighborhood, why it's great…"
+                value={notes} onChange={e => setNotes(e.target.value)} rows={3}
+                style={{ ...inputStyle, padding: '8px 10px', resize: 'vertical', minHeight: 72 }}
+              />
+              <div style={{ fontSize: 11, color: T.muted, lineHeight: 1.5 }}>
+                Opens a GitHub issue. If the camp has a website, it can be added to the auto-scraper.
+                Otherwise it goes in the manual list for the next data update.
+              </div>
+              <button type="submit" style={{
+                padding: '9px 14px', background: ACCENT, color: '#fff', border: 'none',
+                borderRadius: T.radiusSm, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}>Open GitHub issue →</button>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main App ───────────────────────────────────────────────────────────────────
 function App() {
   const cardLayout = CARD_LAYOUT;
@@ -908,6 +1008,7 @@ function App() {
               </div>
             </div>
 
+            <FeedbackBox />
 
           </div>
           {isMobile && (

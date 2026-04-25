@@ -63,4 +63,12 @@ SOURCES: list[dict] = [
         "name": "Berklee City Music",
         "url": "https://summer.berklee.edu/",
     },
+    {
+        "name": "Eliot School of Fine Arts",
+        "url": "https://eliotschool.org/summer-program-for-children",
+    },
+    {
+        "name": "Boston Children's Museum",
+        "url": "https://summercamp.bostonchildrensmuseum.org/overview",
+    },
 ]

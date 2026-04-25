@@ -247,6 +247,25 @@
     "distance_from_roslindale_miles": 3.7
   },
   {
+    "camp_name": "Jóvenes en Acción Summer Session",
+    "organization": "Hyde Square Task Force",
+    "website_url": "https://www.hydesquare.org/jovenes-en-accion/",
+    "address": "30 Sunnyside St, Jamaica Plain, MA 02130",
+    "neighborhood": "Jamaica Plain",
+    "age_range": "Teen youth",
+    "camp_type": "Specialty - Arts/Culture",
+    "hours_of_day": null,
+    "weeks_available": "July 6-August 14, 2026",
+    "cost_per_week": "Free (participants are paid in summer)",
+    "financial_aid_available": null,
+    "signup_url": "https://www.hydesquare.org/join-jovenes-en-accion/",
+    "signup_opens": null,
+    "data_year": 2026,
+    "data_is_stale": false,
+    "last_scraped": "2026-04-24T00:00:00-04:00",
+    "distance_from_roslindale_miles": 2.5
+  },
+  {
     "camp_name": "Hill House Summer Day Camp",
     "organization": "Hill House Boston",
     "website_url": "https://www.hillhouseboston.org/Camps/Summer_Day_Camp.htm",

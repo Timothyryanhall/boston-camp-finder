@@ -189,6 +189,15 @@ function ageMatches(value, targetAge) {
   return targetAge >= minAge && targetAge <= maxAge;
 }
 function distVal(c) { return c.distance_from_roslindale_miles ?? Infinity; }
+const SEASON_MONTHS = {
+  spring: /\b(march|april|may)\b/i,
+  summer: /\b(june|july|august)\b/i,
+  fall: /\b(september|october|november)\b/i,
+};
+function campMatchesSeason(camp, season) {
+  if (!season) return true;
+  return SEASON_MONTHS[season].test(String(camp.weeks_available || ''));
+}
 function compareCamps(a, b, sort) {
   if (sort === 'name') return txt(a.camp_name).localeCompare(txt(b.camp_name));
   if (sort === 'cost') return firstDollar(a.cost_per_week) - firstDollar(b.cost_per_week);
@@ -655,6 +664,7 @@ function App() {
   const [costFilter, setCostFilter] = useState('');
   const [aidFilter, setAidFilter] = useState('');
   const [freshnessFilter, setFreshnessFilter] = useState('');
+  const [seasonFilter, setSeasonFilter] = useState('');
   const [sortMode, setSortMode] = useState('distance');
   const [selectedOrg, setSelectedOrg] = useState(null);
 
@@ -683,12 +693,13 @@ function App() {
     if (aidFilter === 'known' && c.financial_aid_available == null) return false;
     if (freshnessFilter === 'current' && c.data_is_stale) return false;
     if (freshnessFilter === 'stale' && !c.data_is_stale) return false;
+    if (!campMatchesSeason(c, seasonFilter)) return false;
     if (search) {
       const hay = `${c.camp_name} ${c.organization} ${c.neighborhood} ${c.age_range} ${c.cost_per_week}`.toLowerCase();
       if (!hay.includes(search.toLowerCase())) return false;
     }
     return true;
-  }, [typeFilter, ageFilter, distFilter, costFilter, aidFilter, freshnessFilter, search]);
+  }, [typeFilter, ageFilter, distFilter, costFilter, aidFilter, freshnessFilter, seasonFilter, search]);
 
   const withoutOrg = camps.filter(matchesFilters);
   const orgCounts = {};
@@ -739,7 +750,6 @@ function App() {
             </div>
           </div>
           <div style={{ fontSize: 12, color: T.muted, textAlign: 'right', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: accent }}></span>
             {lastScraped ? `Data last updated ${lastScraped}` : 'Loading…'}
             {isMobile && (
               <button onClick={() => setMobileFiltersOpen(o => !o)} style={{
@@ -825,6 +835,15 @@ function App() {
                 </select>
               </FilterField>
             </div>
+
+            <FilterField label="Season">
+              <select value={seasonFilter} onChange={e => setSeasonFilter(e.target.value)} style={selectStyle}>
+                <option value="">Any season</option>
+                <option value="summer">☀️ Summer</option>
+                <option value="spring">🌸 Spring</option>
+                <option value="fall">🍂 Fall</option>
+              </select>
+            </FilterField>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <FilterField label="Data year">

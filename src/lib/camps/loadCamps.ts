@@ -15,5 +15,17 @@ export async function loadCamps(): Promise<Camp[]> {
     throw new Error('Failed to load camps: invalid payload');
   }
 
-  return raw.map((record) => normalizeCamp((record ?? {}) as RawCampRecord));
+  const camps = raw.map((record) => normalizeCamp((record ?? {}) as RawCampRecord));
+
+  // Deduplicate generated IDs so saved-camp lookups are always 1-to-1
+  const seen = new Map<string, number>();
+  for (const camp of camps) {
+    const count = seen.get(camp.id) ?? 0;
+    seen.set(camp.id, count + 1);
+    if (count > 0) {
+      camp.id = `${camp.id}-${count + 1}`;
+    }
+  }
+
+  return camps;
 }

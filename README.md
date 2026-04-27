@@ -1,37 +1,65 @@
 # Boston Camp Finder
 
-Biweekly-updated aggregator of kids' camps near Roslindale, MA.
+Camp search for Boston-area families, centered on camps near Roslindale.
 
 **Live site:** https://bostoncampfinder.com
 
-Data is scraped every other Sunday from 16 Boston-area organizations using Claude for extraction.
-To add a new source, add one entry to `scraper/sources.py`.
+Boston Camp Finder is run by Boston-area parents who got tired of digging through scattered camp listings and stale websites.
+
+The site combines a searchable React frontend, a periodic scraper that refreshes `data.json`, and a small feedback API for suggestions and corrections.
+
+Data is scraped every other Sunday from Boston-area organizations using Claude for extraction. To add a new source, add one entry to `scraper/sources.py`.
 
 ## Architecture
 
 | Layer | Tech |
 |-------|------|
-| Frontend | Static HTML/CSS/JS (`index.html`) |
-| Hosting | Vercel (deployed from `main`) |
+| Frontend | Vite + React + TypeScript + React Router + Tailwind (`src/`) |
+| Hosting | Vercel |
 | API | Vercel Serverless Functions (`api/`) |
 | Database | Neon Postgres (via Vercel Storage integration) |
 | Scraper | Python + Claude API (runs via GitHub Actions) |
+| Data feed | `data.json`, refreshed by the scraper and served to the frontend |
 
-The feedback form at the bottom of the page posts to `/api/submit`, which validates the payload and writes it to a `submissions` table in Neon. Submissions are reviewed directly in the [Neon console](https://console.neon.tech).
+The frontend fetches `/data.json`, renders the camp finder UI, and posts feedback or camp suggestions to `/api/submit`. The feedback endpoint validates submissions and writes them to Neon. Submissions are reviewed directly in the [Neon console](https://console.neon.tech).
+
+## Repository Layout
+
+```text
+src/                 React app
+api/                 Vercel serverless functions and schema
+scraper/             scraper logic and source definitions
+tests/               scraper tests
+data.json            latest scraped camp data
+.github/workflows/   scheduled scrape automation
+```
 
 ## Setup
 
-1. Fork or clone the repo
-2. Connect the repo to [Vercel](https://vercel.com) (Framework: Other, Output Directory: `.`)
-3. Add a Neon Postgres store via Vercel Storage — Vercel auto-injects `DATABASE_URL`
-4. Run `api/schema.sql` in the Neon SQL editor to create the `submissions` table
-5. Add your `ANTHROPIC_API_KEY` as a GitHub Actions secret (Settings → Secrets → Actions)
-6. Trigger the first scrape manually: Actions → Scrape Camp Data → Run workflow
+1. Clone the repo and install frontend dependencies with `npm install`
+2. Connect the repo to [Vercel](https://vercel.com)
+3. Add a Neon Postgres store in Vercel Storage so `DATABASE_URL` is available to `/api/submit`
+4. Run `api/schema.sql` in the Neon SQL editor to create or update the `submissions` table
+5. Add `ANTHROPIC_API_KEY` as a GitHub Actions secret for the scraper workflow
+6. Trigger the scrape workflow manually once from GitHub Actions if you need a fresh `data.json`
 
 ## Development
 
 ```bash
-npm install           # install test runner
-node --test api/validate.test.js   # 9 unit tests (API validation)
-python3 -m pytest                  # 31 scraper tests
+npm install
+npm run dev
 ```
+
+Useful checks:
+
+```bash
+npm run test:run
+node --test api/validate.test.js
+python3 -m pytest
+```
+
+## Deployment
+
+- `main` deploys to Vercel
+- pull requests get Vercel preview deployments
+- the scraper runs on a GitHub Actions schedule and commits refreshed `data.json` back to the repo

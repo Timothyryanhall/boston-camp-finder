@@ -28,23 +28,8 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
       className="[overflow:clip] rounded-xl border border-stone-200 bg-white"
       style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
     >
-      {/* Sticky column header */}
-      <div className="sticky top-[118px] z-10 border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 lg:top-[61px]">
-        <div className="flex items-center justify-between sm:hidden">
-          <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-400">
-            Camp
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="w-10 text-center text-[10px] font-semibold tracking-tight text-stone-500">
-              Open
-            </div>
-            <div className="w-10 text-center text-[10px] font-semibold tracking-tight text-stone-500">
-              Fav
-            </div>
-          </div>
-        </div>
-
-        <div className="hidden grid-cols-[1fr_90px_100px_80px_32px_48px] gap-3 sm:grid">
+      {/* Sticky desktop column header */}
+      <div className="hidden border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 sm:sticky sm:top-[61px] sm:z-10 sm:grid sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3">
           <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-400">
             Camp
           </div>
@@ -63,7 +48,6 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
           <div className="text-center text-[10px] font-bold uppercase tracking-widest text-stone-400">
             Save
           </div>
-        </div>
       </div>
 
       {camps.map((camp) => (

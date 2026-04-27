@@ -78,15 +78,18 @@ describe('FinderLayout', () => {
     expect(stickyStack).toHaveClass('top-[61px]');
     expect(stickyStack).toHaveClass('lg:hidden');
     expect(stickyStack).toHaveTextContent('Showing 1 of 1 camps');
+    expect(stickyStack).toHaveTextContent('Camp');
+    expect(stickyStack).toHaveTextContent('Open');
+    expect(stickyStack).toHaveTextContent('Fav');
   });
 
-  it('offsets the camp list sticky header below the mobile stack', () => {
+  it('keeps the in-list sticky header desktop-only', () => {
     render(<FinderLayout {...makeFinderState()} />);
 
     const agesHeader = screen.getByText('Ages');
-    const stickyHeader = agesHeader.parentElement?.parentElement;
+    const stickyHeader = agesHeader.parentElement;
 
-    expect(stickyHeader).toHaveClass('sticky');
-    expect(stickyHeader).toHaveClass('top-[118px]');
+    expect(stickyHeader).toHaveClass('sm:sticky');
+    expect(stickyHeader).toHaveClass('sm:top-[61px]');
   });
 });

@@ -29,7 +29,7 @@ const camp: Camp = {
 };
 
 describe('CampList', () => {
-  it('shows readable mobile header labels for the visible columns', () => {
+  it('keeps the desktop sticky header for the full table columns', () => {
     render(
       <CampList
         camps={[camp]}
@@ -38,8 +38,10 @@ describe('CampList', () => {
       />,
     );
 
-    expect(screen.getAllByText('Camp').length).toBeGreaterThan(0);
-    expect(screen.getByText('Open')).toBeInTheDocument();
-    expect(screen.getByText('Fav')).toBeInTheDocument();
+    const agesHeader = screen.getByText('Ages');
+    const stickyHeader = agesHeader.parentElement;
+
+    expect(stickyHeader).toHaveClass('sm:sticky');
+    expect(stickyHeader).toHaveClass('sm:top-[61px]');
   });
 });

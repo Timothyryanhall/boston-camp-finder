@@ -75,7 +75,11 @@ export function useFinderState(): FinderState {
   const location = useLocation();
   const navigate = useNavigate();
   const initialShareState = parseFinderShareState(location.search);
-  const [filters, setFiltersState] = useState<FinderFilters>(initialShareState.filters);
+  const sharedIdsOnLoad = parseSharedIds(location.search);
+  const isSharedMode = sharedIdsOnLoad != null;
+  const [filters, setFiltersState] = useState<FinderFilters>(() =>
+    isSharedMode ? { ...initialShareState.filters, savedOnly: true } : initialShareState.filters,
+  );
   const [selectedCampId, setSelectedCampId] = useState<string | null>(
     initialShareState.selectedCampId,
   );
@@ -83,8 +87,6 @@ export function useFinderState(): FinderState {
   const [status, setStatus] = useState<FinderLoadStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
-  const sharedIdsOnLoad = parseSharedIds(location.search);
-  const isSharedMode = sharedIdsOnLoad != null;
   const [savedCampIds, setSavedCampIdsState] = useState<Set<string>>(
     () => sharedIdsOnLoad ?? loadSavedCampIds(),
   );

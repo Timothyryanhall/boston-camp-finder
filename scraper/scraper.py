@@ -11,6 +11,7 @@ from scraper.extractor import extract_camps
 from scraper.fetcher import fetch_page
 from scraper.geocoder import distance_from_roslindale
 from scraper.sources import SOURCES
+from scraper.suggest_resolver import mark_suggestion_scraped, resolve_suggestions
 
 MAX_HOPS = 5
 MANUAL_CAMPS_PATH = Path(__file__).with_name("manual_camps.json")
@@ -111,11 +112,22 @@ def run_scraper(output_path: str = "data.json") -> None:
     client = anthropic.Anthropic()
     all_camps: list[dict] = []
 
+    suggested_sources = resolve_suggestions(client)
+
     for source in SOURCES:
         print(f"Scraping {source['name']}...")
         camps = scrape_source(source, client)
         print(f"  -> {len(camps)} camp(s) found")
         all_camps.extend(camps)
+        time.sleep(2)
+
+    for suggestion in suggested_sources:
+        source = {"name": suggestion["name"], "url": suggestion["url"]}
+        print(f"Scraping suggested camp: {suggestion['name']}...")
+        camps = scrape_source(source, client)
+        print(f"  -> {len(camps)} camp(s) found")
+        all_camps.extend(camps)
+        mark_suggestion_scraped(suggestion["submission_id"], found=len(camps) > 0)
         time.sleep(2)
 
     if not all_camps:

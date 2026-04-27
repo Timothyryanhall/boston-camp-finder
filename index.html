@@ -37,6 +37,13 @@
         box-shadow: 4px 0 24px rgba(0,0,0,0.2);
       }
     }
+    .print-only { display: none; }
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body * { visibility: hidden; }
+      .print-only, .print-only * { visibility: visible; }
+      .print-only { position: absolute; left: 0; top: 0; right: 0; }
+    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #d4c9bc; border-radius: 999px; }
@@ -95,6 +102,32 @@ const TYPE_ICONS = {
   'Zoo': '🐾',
 };
 function typeIcon(type) { return TYPE_ICONS[type] || '🏕️'; }
+
+function campId(camp) {
+  const s = (camp.organization || '') + '|' + (camp.camp_name || '');
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h) ^ s.charCodeAt(i);
+  return (h >>> 0).toString(36);
+}
+
+function SaveButton({ saved, onToggleSave, style = {} }) {
+  return (
+    <button
+      onClick={onToggleSave}
+      title={saved ? 'Remove from saved' : 'Save camp'}
+      style={{
+        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+        border: `1.5px solid ${saved ? '#d97706' : '#e8e0d6'}`,
+        background: saved ? '#fef3c7' : '#fff',
+        cursor: 'pointer', fontSize: 15, lineHeight: 1,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: saved ? '#d97706' : '#78716c',
+        transition: 'all 0.15s',
+        ...style,
+      }}
+    >{saved ? '★' : '☆'}</button>
+  );
+}
 
 const SPORT_NAME_ICONS = [
   [/soccer|futbol/i, '⚽'],
@@ -264,7 +297,7 @@ const inputStyle = {
 };
 
 // ── Camp Card (Comfortable — default) ─────────────────────────────────────────
-function CampCardComfortable({ camp, accent }) {
+function CampCardComfortable({ camp, accent, saved, onToggleSave }) {
   const [open, setOpen] = useState(false);
   const tc = typeColor(camp.camp_type);
   const dist = camp.distance_from_roslindale_miles != null
@@ -276,7 +309,7 @@ function CampCardComfortable({ camp, accent }) {
       background: T.panel, borderRadius: T.radius,
       border: `1.5px solid ${open ? accent : T.border}`,
       boxShadow: open ? T.shadowMd : T.shadow,
-      overflow: 'hidden',
+      overflow: 'hidden', position: 'relative',
       transition: 'border-color 0.2s, box-shadow 0.2s',
     }}>
       {/* Card header — always visible */}
@@ -306,7 +339,7 @@ function CampCardComfortable({ camp, accent }) {
           <div style={{ fontSize: 15, fontWeight: 700, color: T.ink, lineHeight: 1.3 }}>{camp.camp_name}</div>
           <div style={{ fontSize: 13, color: T.muted, marginTop: 2 }}>{camp.organization}</div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, paddingTop: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, paddingTop: 2, paddingRight: 34 }}>
           {dist && (
             <span style={{ fontSize: 12, fontWeight: 700, color: accent, background: T.tealLight, padding: '3px 10px', borderRadius: 999 }}>{dist}</span>
           )}
@@ -319,6 +352,7 @@ function CampCardComfortable({ camp, accent }) {
           }}>▾</span>
         </div>
       </button>
+      <SaveButton saved={saved} onToggleSave={onToggleSave} style={{ position: 'absolute', top: 12, right: 12, zIndex: 2 }} />
 
       {/* Quick facts strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, padding: '0 16px 14px' }}>
@@ -371,7 +405,7 @@ function CampCardComfortable({ camp, accent }) {
 }
 
 // ── Camp Card (Compact) ────────────────────────────────────────────────────────
-function CampCardCompact({ camp, accent }) {
+function CampCardCompact({ camp, accent, saved, onToggleSave }) {
   const [open, setOpen] = useState(false);
   const tc = typeColor(camp.camp_type);
   const dist = camp.distance_from_roslindale_miles != null
@@ -382,7 +416,7 @@ function CampCardCompact({ camp, accent }) {
     <article style={{
       background: T.panel, borderRadius: T.radiusSm,
       border: `1.5px solid ${open ? accent : T.border}`,
-      overflow: 'hidden', transition: 'border-color 0.2s',
+      overflow: 'hidden', position: 'relative', transition: 'border-color 0.2s',
     }}>
       <button
         onClick={() => setOpen(o => !o)}

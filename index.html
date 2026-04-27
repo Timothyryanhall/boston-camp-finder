@@ -32,7 +32,7 @@
         background: rgba(0,0,0,0.4);
       }
       .sidebar-mobile-panel {
-        position: fixed; top: 0; left: 0; bottom: 0; width: min(320px, 100vw);
+        position: fixed; top: 0; left: 0; height: 100vh; height: 100dvh; width: min(320px, 100vw);
         z-index: 201; overflow-y: auto;
         box-shadow: 4px 0 24px rgba(0,0,0,0.2);
       }
@@ -949,7 +949,7 @@ function App() {
 
           </div>
 
-          <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
+          <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 'calc(100dvh - 140px)', overflowY: 'auto' }}>
             <FilterField label="Search">
               <input
                 type="search" placeholder="Camp name, neighborhood…"

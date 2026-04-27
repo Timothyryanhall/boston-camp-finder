@@ -142,11 +142,11 @@ export default function FinderLayout(finder: FinderState) {
                   <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-400">
                     Camp
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 text-center text-[10px] font-semibold tracking-tight text-stone-500">
+                  <div className="flex items-center gap-2">
+                    <div className="w-12 text-center text-[10px] font-semibold tracking-tight text-stone-500">
                       Open
                     </div>
-                    <div className="w-10 text-center text-[10px] font-semibold tracking-tight text-stone-500">
+                    <div className="w-12 text-center text-[10px] font-semibold tracking-tight text-stone-500">
                       Fav
                     </div>
                   </div>

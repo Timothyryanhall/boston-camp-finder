@@ -59,7 +59,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         }}
         className={[
           'grid cursor-pointer items-center gap-2 px-4 py-2.5 transition-colors',
-          'grid-cols-[minmax(0,1fr)_56px_56px] sm:grid-cols-[1fr_90px_100px_80px_32px_48px]',
+          'grid-cols-[minmax(0,1fr)_48px_48px] sm:grid-cols-[1fr_90px_100px_80px_32px_48px]',
           open ? 'bg-stone-50' : 'hover:bg-stone-50/60',
         ].join(' ')}
       >

@@ -151,5 +151,25 @@ def run_scraper(output_path: str = "data.json") -> None:
     print(f"\nDone. Wrote {len(all_camps)} total camps to {output_path} and {history_path}")
 
 
+def run_single(url: str, name: str) -> None:
+    client = anthropic.Anthropic()
+    source = {"name": name, "url": url}
+    print(f"Scraping {name} ({url})...")
+    camps = scrape_source(source, client)
+    print(f"  -> {len(camps)} camp(s) found")
+    for c in camps:
+        print(f"     - {c.get('camp_name')} | {c.get('weeks_available')} | {c.get('cost_per_week')}")
+
+
 if __name__ == "__main__":
-    run_scraper()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--url", help="Scrape a single URL instead of all sources")
+    parser.add_argument("--name", default="Test", help="Name to use with --url")
+    args = parser.parse_args()
+
+    if args.url:
+        run_single(args.url, args.name)
+    else:
+        run_scraper()

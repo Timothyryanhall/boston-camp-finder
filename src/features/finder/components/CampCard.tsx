@@ -59,7 +59,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         }}
         className={[
           'grid cursor-pointer items-center gap-2 px-4 py-2.5 transition-colors',
-          'grid-cols-[1fr_32px_48px] sm:grid-cols-[1fr_90px_100px_80px_32px_48px]',
+          'grid-cols-[minmax(0,1fr)_56px_56px] sm:grid-cols-[1fr_90px_100px_80px_32px_48px]',
           open ? 'bg-stone-50' : 'hover:bg-stone-50/60',
         ].join(' ')}
       >
@@ -121,7 +121,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
             title={isSaved ? 'Remove from saved' : 'Save camp'}
             className={[
               'text-lg leading-none transition-colors',
-              isSaved ? 'text-amber-400' : 'text-stone-200 hover:text-amber-300',
+              isSaved ? 'text-amber-400' : 'text-stone-300 hover:text-amber-300',
             ].join(' ')}
           >
             ★

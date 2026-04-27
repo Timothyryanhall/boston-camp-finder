@@ -29,19 +29,41 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
       style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
     >
       {/* Sticky column header */}
-      <div className="sticky top-[118px] z-10 grid grid-cols-[1fr_32px_48px] gap-2 border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3 lg:top-[61px]">
-        {(['Camp', 'Ages', 'Cost / wk', 'Distance', 'Link', 'Save'] as const).map((h, i) => (
-          <div
-            key={h}
-            className={[
-              'text-[10px] font-bold uppercase tracking-widest text-stone-400',
-              i === 0 ? 'text-left' : i === 5 ? 'text-center' : 'text-right',
-              i >= 1 && i <= 4 ? 'hidden sm:block' : '',
-            ].join(' ')}
-          >
-            {h === 'Link' ? '' : h}
+      <div className="sticky top-[118px] z-10 border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 lg:top-[61px]">
+        <div className="flex items-center justify-between sm:hidden">
+          <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Camp
           </div>
-        ))}
+          <div className="flex items-center gap-3">
+            <div className="w-10 text-center text-[10px] font-semibold tracking-tight text-stone-500">
+              Open
+            </div>
+            <div className="w-10 text-center text-[10px] font-semibold tracking-tight text-stone-500">
+              Fav
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden grid-cols-[1fr_90px_100px_80px_32px_48px] gap-3 sm:grid">
+          <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Camp
+          </div>
+          <div className="text-right text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Ages
+          </div>
+          <div className="text-right text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Cost / wk
+          </div>
+          <div className="text-right text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Distance
+          </div>
+          <div className="text-center text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Link
+          </div>
+          <div className="text-center text-[10px] font-bold uppercase tracking-widest text-stone-400">
+            Save
+          </div>
+        </div>
       </div>
 
       {camps.map((camp) => (

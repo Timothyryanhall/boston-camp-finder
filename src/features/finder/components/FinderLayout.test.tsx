@@ -84,7 +84,7 @@ describe('FinderLayout', () => {
     render(<FinderLayout {...makeFinderState()} />);
 
     const agesHeader = screen.getByText('Ages');
-    const stickyHeader = agesHeader.parentElement;
+    const stickyHeader = agesHeader.parentElement?.parentElement;
 
     expect(stickyHeader).toHaveClass('sticky');
     expect(stickyHeader).toHaveClass('top-[118px]');

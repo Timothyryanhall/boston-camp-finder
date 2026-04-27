@@ -23,7 +23,7 @@
 - Modify: none
 - Test: `node tmp/frontend-smoke.mjs`
 
-- [ ] **Step 1: Write the failing smoke test**
+- [x] **Step 1: Write the failing smoke test**
 
 Create `tmp/frontend-smoke.mjs` with assertions that inspect `index.html` for feature wiring that is missing in the current WIP:
 
@@ -47,13 +47,13 @@ assert.match(html, /className="print-only"/);
 assert.match(html, /savedCampsList\.map/);
 ```
 
-- [ ] **Step 2: Run smoke test to verify it fails**
+- [x] **Step 2: Run smoke test to verify it fails**
 
 Run: `node tmp/frontend-smoke.mjs`
 
 Expected: FAIL on missing saved/list/app wiring, proving the current frontend does not yet implement the completed feature.
 
-- [ ] **Step 3: Commit smoke test**
+- [x] **Step 3: Commit smoke test**
 
 Do not commit this temporary smoke script. It lives in `tmp/`, which is ignored by git.
 
@@ -63,7 +63,7 @@ Do not commit this temporary smoke script. It lives in `tmp/`, which is ignored 
 - Modify: `index.html`
 - Test: `node tmp/frontend-smoke.mjs`
 
-- [ ] **Step 1: Update `CampCardCompact`**
+- [x] **Step 1: Update `CampCardCompact`**
 
 Add `paddingRight: 36` to the right-side metadata div and add a sibling `SaveButton` after the expand button:
 
@@ -75,7 +75,7 @@ Add `paddingRight: 36` to the right-side metadata div and add a sibling `SaveBut
 <SaveButton saved={saved} onToggleSave={onToggleSave} style={{ position: 'absolute', top: 8, right: 8, zIndex: 2 }} />
 ```
 
-- [ ] **Step 2: Update `CampCardList` signature and layout**
+- [x] **Step 2: Update `CampCardList` signature and layout**
 
 Change the signature to:
 
@@ -115,7 +115,7 @@ Wrap the row button in a flex container and add a sibling `SaveButton`:
 - Modify: `index.html`
 - Test: `node tmp/frontend-smoke.mjs`
 
-- [ ] **Step 1: Add saved state after existing `useState` declarations in `App`**
+- [x] **Step 1: Add saved state after existing `useState` declarations in `App`**
 
 ```js
 const [savedIds, setSavedIds] = useState(() => {
@@ -132,7 +132,7 @@ const [showSavedOnly, setShowSavedOnly] = useState(false);
 const [copyStatus, setCopyStatus] = useState('idle');
 ```
 
-- [ ] **Step 2: Add effects after data loading**
+- [x] **Step 2: Add effects after data loading**
 
 ```js
 useEffect(() => {
@@ -146,7 +146,7 @@ useEffect(() => {
 }, [savedIds]);
 ```
 
-- [ ] **Step 3: Add saved helpers before `return`**
+- [x] **Step 3: Add saved helpers before `return`**
 
 ```js
 function toggleSaved(camp) {
@@ -180,7 +180,7 @@ function copyShareLink() {
 const savedCampsList = camps.filter(c => savedIds.has(campId(c)));
 ```
 
-- [ ] **Step 4: Update filtered results**
+- [x] **Step 4: Update filtered results**
 
 ```js
 const filtered = (selectedOrg ? withoutOrg.filter(c => c.organization === selectedOrg) : withoutOrg)
@@ -194,19 +194,19 @@ const filtered = (selectedOrg ? withoutOrg.filter(c => c.organization === select
 - Modify: `index.html`
 - Test: `node tmp/frontend-smoke.mjs`
 
-- [ ] **Step 1: Add saved sidebar panel above `FeedbackBox`**
+- [x] **Step 1: Add saved sidebar panel above `FeedbackBox`**
 
 Render the saved count, clear button, saved-only toggle, copy link button, and print button when `savedIds.size > 0`.
 
-- [ ] **Step 2: Add shared-mode banner before the result count row**
+- [x] **Step 2: Add shared-mode banner before the result count row**
 
 Render a teal banner when `sharedMode` is true that says `Viewing a shared list` and includes the saved count.
 
-- [ ] **Step 3: Update list header alignment**
+- [x] **Step 3: Update list header alignment**
 
 Wrap the list header grid in a flex container and add a `width: 48` spacer to align with the new save button column.
 
-- [ ] **Step 4: Pass saved props to cards**
+- [x] **Step 4: Pass saved props to cards**
 
 ```jsx
 <CampCard
@@ -218,7 +218,7 @@ Wrap the list header grid in a flex container and add a `width: 48` spacer to al
 />
 ```
 
-- [ ] **Step 5: Add print-only saved camps section after the footer**
+- [x] **Step 5: Add print-only saved camps section after the footer**
 
 Render `savedCampsList.map(...)` inside `<div className="print-only">` with camp name, organization, age, cost, dates, location, hours, aid, and URL.
 
@@ -228,25 +228,25 @@ Render `savedCampsList.map(...)` inside `<div className="print-only">` with camp
 - Modify: `index.html`
 - Test: existing test suites and local browser smoke check
 
-- [ ] **Step 1: Run frontend smoke test**
+- [x] **Step 1: Run frontend smoke test**
 
 Run: `node tmp/frontend-smoke.mjs`
 
 Expected: PASS.
 
-- [ ] **Step 2: Run API tests**
+- [x] **Step 2: Run API tests**
 
 Run: `node --test api/validate.test.js`
 
 Expected: PASS.
 
-- [ ] **Step 3: Run scraper tests**
+- [x] **Step 3: Run scraper tests**
 
 Run: `python3 -m pytest`
 
 Expected: PASS.
 
-- [ ] **Step 4: Run browser smoke check**
+- [x] **Step 4: Run browser smoke check**
 
 Serve locally with `python3 -m http.server 8010`, open `http://localhost:8010/`, and verify:
 
@@ -257,7 +257,7 @@ Serve locally with `python3 -m http.server 8010`, open `http://localhost:8010/`,
 - Saved-only toggle filters visible results.
 - Shared URL mode shows the banner.
 
-- [ ] **Step 5: Commit implementation**
+- [x] **Step 5: Commit implementation**
 
 ```bash
 git add index.html docs/superpowers/plans/2026-04-27-favorites-share-print.md

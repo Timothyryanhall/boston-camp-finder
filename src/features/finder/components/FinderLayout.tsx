@@ -122,21 +122,23 @@ export default function FinderLayout(finder: FinderState) {
                 totalCount={finder.camps.length}
               />
 
+              <div className="sticky top-[61px] z-20 -mx-3 border-y border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(true)}
+                  className="flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm hover:bg-stone-50"
+                >
+                  ⚙ Filters
+                  {finder.savedCount > 0 && (
+                    <span className="rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                      {finder.savedCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+
               <div className="flex items-start justify-between gap-4 text-sm text-stone-500">
                 <div className="flex items-center gap-3">
-                  {/* Mobile: Filters toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setMobileFiltersOpen(true)}
-                    className="flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm hover:bg-stone-50 lg:hidden"
-                  >
-                    ⚙ Filters
-                    {finder.savedCount > 0 && (
-                      <span className="rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">
-                        {finder.savedCount}
-                      </span>
-                    )}
-                  </button>
                   <span>
                     {`Showing ${finder.visibleCamps.length} of ${finder.camps.length} camps`}
                   </span>

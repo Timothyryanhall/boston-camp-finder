@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { FinderState } from '../hooks/useFinderState';
 import FilterBar from './FilterBar';
 import CampList from './CampList';
@@ -5,33 +6,64 @@ import ResultsSummary from './ResultsSummary';
 import SavedControls from './SavedControls';
 
 export default function FinderLayout(finder: FinderState) {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const sidebar = (
+    <div
+      className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm"
+      style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
+    >
+      <FilterBar
+        filters={finder.filters}
+        typeOptions={finder.typeOptions}
+        orgCounts={finder.orgCounts}
+        onFiltersChange={finder.setFilters}
+      />
+
+      {(finder.savedCount > 0 || finder.filters.savedOnly) && (
+        <SavedControls
+          savedCount={finder.savedCount}
+          savedOnly={finder.filters.savedOnly}
+          onToggleSavedOnly={finder.setSavedOnly}
+          onClearSaved={finder.clearSavedCamps}
+        />
+      )}
+    </div>
+  );
+
   return (
     <div className="mx-auto max-w-[1260px] px-6 py-6 pb-12">
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
 
-        {/* ── Sidebar ── */}
-        <aside className="lg:sticky lg:top-[61px] lg:max-h-[calc(100dvh-85px)] lg:overflow-y-auto">
-          <div
-            className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm"
-            style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
-          >
-            <FilterBar
-              filters={finder.filters}
-              typeOptions={finder.typeOptions}
-              orgCounts={finder.orgCounts}
-              onFiltersChange={finder.setFilters}
-            />
-
-            {(finder.savedCount > 0 || finder.filters.savedOnly) && (
-              <SavedControls
-                savedCount={finder.savedCount}
-                savedOnly={finder.filters.savedOnly}
-                onToggleSavedOnly={finder.setSavedOnly}
-                onClearSaved={finder.clearSavedCamps}
-              />
-            )}
-          </div>
+        {/* ── Desktop Sidebar ── */}
+        <aside className="hidden lg:block lg:sticky lg:top-[61px] lg:max-h-[calc(100dvh-85px)] lg:overflow-y-auto">
+          {sidebar}
         </aside>
+
+        {/* ── Mobile slide-over ── */}
+        {mobileFiltersOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+              onClick={() => setMobileFiltersOpen(false)}
+            />
+            {/* Panel */}
+            <div className="fixed inset-y-0 left-0 z-50 w-[300px] overflow-y-auto bg-white shadow-xl lg:hidden">
+              <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3">
+                <span className="text-sm font-bold text-stone-700">Filters</span>
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="text-sm font-semibold text-teal-600 hover:text-teal-800"
+                >
+                  Show results →
+                </button>
+              </div>
+              {sidebar}
+            </div>
+          </>
+        )}
 
         {/* ── Main ── */}
         <main>
@@ -82,9 +114,24 @@ export default function FinderLayout(finder: FinderState) {
               />
 
               <div className="flex items-start justify-between gap-4 text-sm text-stone-500">
-                <span>
-                  {`Showing ${finder.visibleCamps.length} of ${finder.camps.length} camps`}
-                </span>
+                <div className="flex items-center gap-3">
+                  {/* Mobile: Filters toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setMobileFiltersOpen(true)}
+                    className="flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm hover:bg-stone-50 lg:hidden"
+                  >
+                    ⚙ Filters
+                    {finder.savedCount > 0 && (
+                      <span className="rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">
+                        {finder.savedCount}
+                      </span>
+                    )}
+                  </button>
+                  <span>
+                    {`Showing ${finder.visibleCamps.length} of ${finder.camps.length} camps`}
+                  </span>
+                </div>
                 <span className="max-w-sm text-right text-xs italic">
                   This is a starting point — always verify dates, cost, and
                   availability directly with each camp before registering.

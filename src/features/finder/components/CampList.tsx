@@ -25,7 +25,7 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
 
   return (
     <div
-      className="overflow-hidden rounded-xl border border-stone-200 bg-white"
+      className="[overflow:clip] rounded-xl border border-stone-200 bg-white"
       style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
     >
       {/* Sticky column header */}

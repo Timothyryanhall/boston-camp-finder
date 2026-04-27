@@ -29,7 +29,7 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
       style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
     >
       {/* Sticky column header */}
-      <div className="sticky top-[61px] z-10 grid grid-cols-[1fr_90px_100px_80px_32px_48px] gap-3 border-b border-stone-200 bg-stone-50 px-4 py-2">
+      <div className="sticky top-[61px] z-10 grid grid-cols-[1fr_90px_100px_80px_32px_48px] gap-3 border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2">
         {['Camp', 'Ages', 'Cost / wk', 'Distance', '', 'Save'].map((h, i) => (
           <div
             key={i}

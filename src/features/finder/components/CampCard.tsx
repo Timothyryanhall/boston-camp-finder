@@ -73,6 +73,9 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
             <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] text-stone-400">
               {camp.organization}
             </div>
+            <div className="mt-0.5 text-[11px] font-medium text-stone-500 sm:hidden">
+              {`Ages ${camp.ageRange || '—'}`}
+            </div>
           </div>
         </div>
 

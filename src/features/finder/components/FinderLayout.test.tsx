@@ -68,14 +68,25 @@ function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
 }
 
 describe('FinderLayout', () => {
-  it('keeps the mobile filters trigger in a sticky bar below the header', () => {
+  it('renders a single sticky mobile stack for filters and results summary', () => {
     render(<FinderLayout {...makeFinderState()} />);
 
     const filtersButton = screen.getByRole('button', { name: /filters/i });
-    const stickyBar = filtersButton.closest('div');
+    const stickyStack = filtersButton.parentElement;
 
-    expect(stickyBar).toHaveClass('sticky');
-    expect(stickyBar).toHaveClass('top-[61px]');
-    expect(stickyBar).toHaveClass('lg:hidden');
+    expect(stickyStack).toHaveClass('sticky');
+    expect(stickyStack).toHaveClass('top-[61px]');
+    expect(stickyStack).toHaveClass('lg:hidden');
+    expect(stickyStack).toHaveTextContent('Showing 1 of 1 camps');
+  });
+
+  it('offsets the camp list sticky header below the mobile stack', () => {
+    render(<FinderLayout {...makeFinderState()} />);
+
+    const agesHeader = screen.getByText('Ages');
+    const stickyHeader = agesHeader.parentElement;
+
+    expect(stickyHeader).toHaveClass('sticky');
+    expect(stickyHeader).toHaveClass('top-[118px]');
   });
 });

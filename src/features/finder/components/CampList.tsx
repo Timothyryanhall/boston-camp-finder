@@ -1,55 +1,56 @@
 import type { Camp } from '../types';
-
 import CampCard from './CampCard';
 
 interface CampListProps {
   camps: Camp[];
-  selectedCampId: string | null;
   savedCampIds: Set<string>;
-  onSelectCamp: (campId: string) => void;
   onToggleSavedCamp: (campId: string) => void;
-  emptyTitle: string;
-  emptyDescription: string;
 }
 
-export default function CampList({
-  camps,
-  selectedCampId,
-  savedCampIds,
-  onSelectCamp,
-  onToggleSavedCamp,
-  emptyTitle,
-  emptyDescription,
-}: CampListProps) {
+export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: CampListProps) {
   if (camps.length === 0) {
     return (
-      <section className="rounded-[28px] border border-dashed border-sand-200 bg-white/80 p-8 text-center shadow-card">
-        <h2 className="text-xl font-black tracking-tight text-sand-900">{emptyTitle}</h2>
-        <p className="mt-2 text-sm leading-6 text-sand-700">{emptyDescription}</p>
-      </section>
+      <div
+        className="rounded-xl border border-dashed border-stone-200 bg-white p-12 text-center"
+        style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06)' }}
+      >
+        <div className="text-3xl">🔍</div>
+        <div className="mt-2 font-semibold text-stone-700">No camps match your filters</div>
+        <div className="mt-1 text-sm text-stone-400">
+          Try widening your search or removing a filter.
+        </div>
+      </div>
     );
   }
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xl font-black tracking-tight text-sand-900">Camp list</h2>
-        <p className="text-sm text-sand-700">{camps.length} results</p>
-      </div>
-
-      <div className="grid gap-4">
-        {camps.map((camp) => (
-          <CampCard
-            key={camp.id}
-            camp={camp}
-            isSelected={camp.id === selectedCampId}
-            isSaved={savedCampIds.has(camp.id)}
-            onSelect={onSelectCamp}
-            onToggleSaved={onToggleSavedCamp}
-          />
+    <div
+      className="overflow-hidden rounded-xl border border-stone-200 bg-white"
+      style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
+    >
+      {/* Sticky column header */}
+      <div className="sticky top-[61px] z-10 grid grid-cols-[1fr_90px_100px_80px_32px_48px] gap-3 border-b border-stone-200 bg-stone-50 px-4 py-2">
+        {['Camp', 'Ages', 'Cost / wk', 'Distance', '', 'Save'].map((h, i) => (
+          <div
+            key={i}
+            className={[
+              'text-[10px] font-bold uppercase tracking-widest text-stone-400',
+              i === 0 ? 'text-left' : i === 5 ? 'text-center' : 'text-right',
+            ].join(' ')}
+          >
+            {h}
+          </div>
         ))}
       </div>
-    </section>
+
+      {camps.map((camp) => (
+        <CampCard
+          key={camp.id}
+          camp={camp}
+          isSaved={savedCampIds.has(camp.id)}
+          onToggleSaved={onToggleSavedCamp}
+        />
+      ))}
+    </div>
   );
 }
-

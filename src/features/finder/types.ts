@@ -18,6 +18,8 @@ export type CampType =
 
 export type FinderSort = 'distance' | 'name' | 'cost' | 'current';
 export type FinderSeason = 'spring' | 'summer' | 'fall' | 'winter' | 'all';
+export type FinderAidFilter = 'yes' | 'known' | 'all';
+export type FinderFreshnessFilter = 'current' | 'stale' | 'all';
 
 export interface RawCampRecord {
   camp_name?: unknown;
@@ -71,4 +73,8 @@ export interface FinderFilters {
   age: number | null;
   savedOnly: boolean;
   sort: FinderSort;
+  maxCost: number | null;
+  aidFilter: FinderAidFilter;
+  freshnessFilter: FinderFreshnessFilter;
+  selectedOrg: string | null;
 }

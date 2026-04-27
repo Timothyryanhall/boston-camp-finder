@@ -138,26 +138,7 @@ function matchesAge(ageRange: string, age: number | null): boolean {
   return age >= parsed.min && age <= parsed.max;
 }
 
-function compareByCost(left: Camp, right: Camp): number {
-  const leftValue = extractCost(left.costLabel);
-  const rightValue = extractCost(right.costLabel);
-
-  if (leftValue == null && rightValue == null) {
-    return left.costLabel.localeCompare(right.costLabel);
-  }
-
-  if (leftValue == null) {
-    return 1;
-  }
-
-  if (rightValue == null) {
-    return -1;
-  }
-
-  return leftValue - rightValue || left.costLabel.localeCompare(right.costLabel);
-}
-
-function extractCost(costLabel: string): number | null {
+export function extractCost(costLabel: string): number | null {
   const text = normalizeText(costLabel);
 
   if (text.includes('free')) {
@@ -177,6 +158,25 @@ function extractCost(costLabel: string): number | null {
   }
 
   return Math.min(...numbers);
+}
+
+function compareByCost(left: Camp, right: Camp): number {
+  const leftValue = extractCost(left.costLabel);
+  const rightValue = extractCost(right.costLabel);
+
+  if (leftValue == null && rightValue == null) {
+    return left.costLabel.localeCompare(right.costLabel);
+  }
+
+  if (leftValue == null) {
+    return 1;
+  }
+
+  if (rightValue == null) {
+    return -1;
+  }
+
+  return leftValue - rightValue || left.costLabel.localeCompare(right.costLabel);
 }
 
 function compareCamps(left: Camp, right: Camp, sort: FinderFilters['sort']): number {
@@ -216,5 +216,23 @@ export function applyFilters(
     )
     .filter((camp) => matchesAge(camp.ageRange, filters.age))
     .filter((camp) => !filters.savedOnly || savedIds.has(camp.id))
+    .filter((camp) => {
+      if (filters.maxCost == null) return true;
+      const cost = extractCost(camp.costLabel);
+      return cost == null || cost <= filters.maxCost;
+    })
+    .filter((camp) => {
+      if (filters.aidFilter === 'yes') return camp.financialAidAvailable === true;
+      if (filters.aidFilter === 'known') return camp.financialAidAvailable != null;
+      return true;
+    })
+    .filter((camp) => {
+      if (filters.freshnessFilter === 'current') return !camp.isStale;
+      if (filters.freshnessFilter === 'stale') return camp.isStale;
+      return true;
+    })
+    .filter((camp) =>
+      filters.selectedOrg == null || camp.organization === filters.selectedOrg,
+    )
     .sort((left, right) => compareCamps(left, right, filters.sort));
 }

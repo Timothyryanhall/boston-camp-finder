@@ -145,6 +145,10 @@ function makeFilters(overrides: Partial<FinderFilters> = {}): FinderFilters {
     age: null,
     savedOnly: false,
     sort: 'distance',
+    maxCost: null,
+    aidFilter: 'all',
+    freshnessFilter: 'all',
+    selectedOrg: null,
     ...overrides,
   };
 }
@@ -342,5 +346,49 @@ describe('applyFilters', () => {
       'tech-foundry-youth-circuit',
       'community-arts-center-winter-artists',
     ]);
+  });
+
+  it('filters by max cost, excluding camps whose minimum price exceeds the cap', () => {
+    const result = applyFilters(
+      camps,
+      makeFilters({ maxCost: 300 }),
+      new Set(),
+    );
+
+    const ids = result.map((c) => c.id);
+    expect(ids).not.toContain('franklin-park-zoo-zoo-crew');       // $350 > $300
+    expect(ids).toContain('community-arts-center-winter-artists'); // $275
+    expect(ids).toContain('city-stage-culture-lab');               // $150
+    expect(ids).toContain('city-youth-collective-leadership-lab'); // Free
+    expect(ids).not.toContain('museum-of-science-robotics-lab');   // $500 > $300
+  });
+
+  it('filters by financial aid availability', () => {
+    const aidYes = applyFilters(camps, makeFilters({ aidFilter: 'yes' }), new Set());
+    expect(aidYes.every((c) => c.financialAidAvailable === true)).toBe(true);
+
+    const aidKnown = applyFilters(camps, makeFilters({ aidFilter: 'known' }), new Set());
+    expect(aidKnown.every((c) => c.financialAidAvailable != null)).toBe(true);
+    expect(aidKnown.some((c) => c.financialAidAvailable === false)).toBe(true);
+  });
+
+  it('filters by data freshness', () => {
+    const current = applyFilters(camps, makeFilters({ freshnessFilter: 'current' }), new Set());
+    expect(current.every((c) => !c.isStale)).toBe(true);
+
+    const stale = applyFilters(camps, makeFilters({ freshnessFilter: 'stale' }), new Set());
+    expect(stale.every((c) => c.isStale)).toBe(true);
+    expect(stale.map((c) => c.id)).toContain('museum-of-science-robotics-lab');
+  });
+
+  it('filters by organization name', () => {
+    const result = applyFilters(
+      camps,
+      makeFilters({ selectedOrg: 'Franklin Park Zoo' }),
+      new Set(),
+    );
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('franklin-park-zoo-zoo-crew');
   });
 });

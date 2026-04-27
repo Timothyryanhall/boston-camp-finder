@@ -4,7 +4,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type {
   Camp,
   CampType,
+  FinderAidFilter,
   FinderFilters,
+  FinderFreshnessFilter,
   FinderSeason,
   FinderSort,
 } from '../types';
@@ -35,6 +37,8 @@ export interface FinderState {
   savedCampIds: Set<string>;
   savedCount: number;
   typeOptions: CampType[];
+  orgCounts: Record<string, number>;
+  lastScrapedLabel: string | null;
   setFilters: (updates: Partial<FinderFilters>) => void;
   setQuery: (query: string) => void;
   setSeason: (season: FinderSeason) => void;
@@ -43,6 +47,10 @@ export interface FinderState {
   setAge: (age: number | null) => void;
   setSort: (sort: FinderSort) => void;
   setSavedOnly: (savedOnly: boolean) => void;
+  setMaxCost: (maxCost: number | null) => void;
+  setAidFilter: (aid: FinderAidFilter) => void;
+  setFreshnessFilter: (fresh: FinderFreshnessFilter) => void;
+  setSelectedOrg: (org: string | null) => void;
   selectCamp: (campId: string | null) => void;
   toggleSavedCamp: (campId: string) => void;
   clearSavedCamps: () => void;
@@ -163,7 +171,22 @@ export function useFinderState(): FinderState {
     );
   }, [filters, location.pathname, location.search, navigate, selectedCampId]);
 
-  const visibleCamps = status === 'ready' ? applyFilters(camps, filters, savedCampIds) : [];
+  const campsForOrgCounts =
+    status === 'ready'
+      ? applyFilters(camps, { ...filters, selectedOrg: null }, savedCampIds)
+      : [];
+
+  const visibleCamps =
+    filters.selectedOrg == null
+      ? campsForOrgCounts
+      : campsForOrgCounts.filter((camp) => camp.organization === filters.selectedOrg);
+
+  const orgCounts: Record<string, number> = {};
+  campsForOrgCounts.forEach((camp) => {
+    const org = camp.organization || 'Unknown';
+    orgCounts[org] = (orgCounts[org] || 0) + 1;
+  });
+
   const selectedCamp = selectedCampId
     ? camps.find((camp) => camp.id === selectedCampId) ?? null
     : null;
@@ -174,59 +197,18 @@ export function useFinderState(): FinderState {
     new Set(camps.flatMap((camp) => camp.typeTags)),
   ).sort((left, right) => left.localeCompare(right));
 
+  const lastScrapedLabel = (() => {
+    const dates = camps.map((c) => c.lastScrapedAt).filter(Boolean).sort() as string[];
+    if (!dates.length) return null;
+    return new Date(dates[dates.length - 1]).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  })();
+
   function updateFilters(updates: Partial<FinderFilters>): void {
-    setFiltersState((current) => ({
-      ...current,
-      ...updates,
-    }));
-  }
-
-  function setQuery(query: string): void {
-    updateFilters({ query });
-  }
-
-  function setSeason(season: FinderSeason): void {
-    updateFilters({ season });
-  }
-
-  function setMaxDistance(maxDistance: number | null): void {
-    updateFilters({ maxDistance });
-  }
-
-  function setType(type: CampType | 'all'): void {
-    updateFilters({ type });
-  }
-
-  function setAge(age: number | null): void {
-    updateFilters({ age });
-  }
-
-  function setSort(sort: FinderSort): void {
-    updateFilters({ sort });
-  }
-
-  function setSavedOnly(savedOnly: boolean): void {
-    updateFilters({ savedOnly });
-  }
-
-  function selectCamp(campId: string | null): void {
-    setSelectedCampId(campId);
-  }
-
-  function toggleSavedCamp(campId: string): void {
-    setSavedCampIdsState((current) => toggleSavedCampId(current, campId));
-  }
-
-  function clearSavedCamps(): void {
-    setSavedCampIdsState(new Set());
-  }
-
-  function resetFilters(): void {
-    setFiltersState(DEFAULT_FINDER_FILTERS);
-  }
-
-  function retry(): void {
-    setReloadToken((current) => current + 1);
+    setFiltersState((current) => ({ ...current, ...updates }));
   }
 
   return {
@@ -241,18 +223,25 @@ export function useFinderState(): FinderState {
     savedCampIds,
     savedCount,
     typeOptions,
+    orgCounts,
+    lastScrapedLabel,
     setFilters: updateFilters,
-    setQuery,
-    setSeason,
-    setMaxDistance,
-    setType,
-    setAge,
-    setSort,
-    setSavedOnly,
-    selectCamp,
-    toggleSavedCamp,
-    clearSavedCamps,
-    resetFilters,
-    retry,
+    setQuery: (query) => updateFilters({ query }),
+    setSeason: (season) => updateFilters({ season }),
+    setMaxDistance: (maxDistance) => updateFilters({ maxDistance }),
+    setType: (type) => updateFilters({ type }),
+    setAge: (age) => updateFilters({ age }),
+    setSort: (sort) => updateFilters({ sort }),
+    setSavedOnly: (savedOnly) => updateFilters({ savedOnly }),
+    setMaxCost: (maxCost) => updateFilters({ maxCost }),
+    setAidFilter: (aidFilter) => updateFilters({ aidFilter }),
+    setFreshnessFilter: (freshnessFilter) => updateFilters({ freshnessFilter }),
+    setSelectedOrg: (selectedOrg) => updateFilters({ selectedOrg }),
+    selectCamp: (campId) => setSelectedCampId(campId),
+    toggleSavedCamp: (campId) =>
+      setSavedCampIdsState((current) => toggleSavedCampId(current, campId)),
+    clearSavedCamps: () => setSavedCampIdsState(new Set()),
+    resetFilters: () => setFiltersState(DEFAULT_FINDER_FILTERS),
+    retry: () => setReloadToken((current) => current + 1),
   };
 }

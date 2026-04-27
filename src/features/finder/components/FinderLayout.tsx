@@ -1,119 +1,114 @@
 import type { FinderState } from '../hooks/useFinderState';
 import FilterBar from './FilterBar';
-import ResultsSummary from './ResultsSummary';
 import CampList from './CampList';
-import CampDetailPanel from './CampDetailPanel';
-import MapPanel from './MapPanel';
+import ResultsSummary from './ResultsSummary';
 import SavedControls from './SavedControls';
 
 export default function FinderLayout(finder: FinderState) {
   return (
-    <section className="overflow-hidden rounded-[32px] border border-white/70 bg-white/80 shadow-card backdrop-blur">
-      <div className="border-b border-sand-200/80 px-6 py-6 sm:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.22em] text-teal-800">
-          Public finder
-        </p>
-        <h1 className="mt-3 text-4xl font-black tracking-tight text-sand-900 sm:text-5xl">
-          Boston Camp Finder
-        </h1>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-sand-700">
-          Browse the current camp list, filter by season or age, and keep a
-          shortlist in your browser.
-        </p>
-      </div>
+    <div className="mx-auto max-w-[1260px] px-6 py-6 pb-12">
+      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
 
-      <div className="grid gap-6 px-6 py-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)] lg:px-8">
-        <div className="space-y-6">
+        {/* ── Sidebar ── */}
+        <aside className="lg:sticky lg:top-[61px] lg:max-h-[calc(100dvh-85px)] lg:overflow-y-auto">
+          <div
+            className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm"
+            style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
+          >
+            <FilterBar
+              filters={finder.filters}
+              typeOptions={finder.typeOptions}
+              orgCounts={finder.orgCounts}
+              onFiltersChange={finder.setFilters}
+            />
+
+            {(finder.savedCount > 0 || finder.filters.savedOnly) && (
+              <SavedControls
+                savedCount={finder.savedCount}
+                savedOnly={finder.filters.savedOnly}
+                onToggleSavedOnly={finder.setSavedOnly}
+                onClearSaved={finder.clearSavedCamps}
+              />
+            )}
+          </div>
+        </aside>
+
+        {/* ── Main ── */}
+        <main>
           {finder.status === 'loading' ? (
-            <section className="rounded-[28px] border border-sand-200 bg-white/90 p-6 shadow-card">
-              <div className="h-4 w-32 animate-pulse rounded-full bg-sand-100" />
-              <div className="mt-4 h-8 w-64 animate-pulse rounded-full bg-sand-100" />
-              <div className="mt-3 h-4 w-full animate-pulse rounded-full bg-sand-100" />
-              <div className="mt-2 h-4 w-3/4 animate-pulse rounded-full bg-sand-100" />
-            </section>
+            <div
+              className="overflow-hidden rounded-xl border border-stone-200 bg-white"
+              style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06)' }}
+            >
+              <div className="grid grid-cols-4">
+                {[0, 1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="border-r border-stone-100 p-4 last:border-r-0"
+                  >
+                    <div className="h-6 w-10 animate-pulse rounded bg-stone-100" />
+                    <div className="mt-1.5 h-3 w-20 animate-pulse rounded bg-stone-100" />
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : finder.status === 'error' ? (
-            <section className="rounded-[28px] border border-rose-200 bg-rose-50 p-6 shadow-card">
-              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-rose-800">
+            <div
+              className="rounded-xl border border-rose-200 bg-rose-50 p-6"
+              style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06)' }}
+            >
+              <p className="text-xs font-bold uppercase tracking-widest text-rose-700">
                 Load error
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight text-rose-950">
+              <h2 className="mt-1 text-xl font-extrabold text-rose-900">
                 Could not load camps
               </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-rose-900">
-                {finder.error ?? 'The camp dataset could not be fetched.'}
+              <p className="mt-1.5 text-sm text-rose-800">
+                {finder.error ?? 'The camp data could not be fetched.'}
               </p>
               <button
                 type="button"
-                className="mt-4 inline-flex items-center justify-center rounded-full bg-rose-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-800"
+                className="mt-4 rounded-full bg-rose-900 px-4 py-2 text-sm font-bold text-white hover:bg-rose-800"
                 onClick={finder.retry}
               >
                 Try again
               </button>
-            </section>
+            </div>
           ) : (
-            <>
-              <FilterBar
-                filters={finder.filters}
-                typeOptions={finder.typeOptions}
-                onQueryChange={finder.setQuery}
-                onSeasonChange={finder.setSeason}
-                onTypeChange={finder.setType}
-                onMaxDistanceChange={finder.setMaxDistance}
-                onAgeChange={finder.setAge}
-                onSortChange={finder.setSort}
+            <div className="space-y-3">
+              <ResultsSummary
+                visibleCamps={finder.visibleCamps}
+                totalCount={finder.camps.length}
               />
 
-              <ResultsSummary
-                totalCount={finder.camps.length}
-                visibleCount={finder.visibleCamps.length}
-                filters={finder.filters}
-                selectedCamp={finder.selectedCamp}
-                onResetFilters={finder.resetFilters}
-              />
+              <div className="flex items-start justify-between gap-4 text-sm text-stone-500">
+                <span>
+                  {`Showing ${finder.visibleCamps.length} of ${finder.camps.length} camps`}
+                </span>
+                <span className="max-w-sm text-right text-xs italic">
+                  This is a starting point — always verify dates, cost, and
+                  availability directly with each camp before registering.
+                </span>
+              </div>
 
               <CampList
                 camps={finder.visibleCamps}
-                selectedCampId={finder.selectedCampId}
                 savedCampIds={finder.savedCampIds}
-                onSelectCamp={finder.selectCamp}
                 onToggleSavedCamp={finder.toggleSavedCamp}
-                emptyTitle={
-                  finder.filters.savedOnly
-                    ? 'No saved camps match your current filters'
-                    : 'No camps match your filters'
-                }
-                emptyDescription={
-                  finder.filters.savedOnly
-                    ? 'Turn off saved-only mode or clear some filters to see more camps.'
-                    : 'Relax one filter at a time to expand the list.'
-                }
               />
 
-              <MapPanel
-                camps={finder.visibleCamps}
-                selectedCamp={finder.selectedCamp}
-              />
-            </>
+              <footer className="mt-6 border-t border-stone-200 pt-4 text-xs leading-relaxed text-stone-400">
+                Data scraped periodically via GitHub Actions using Claude.
+                Information may be from a prior year — always check directly
+                with each camp.
+                {finder.lastScrapedLabel
+                  ? ` Last updated ${finder.lastScrapedLabel}.`
+                  : null}
+              </footer>
+            </div>
           )}
-        </div>
-
-        <aside className="space-y-6">
-          <SavedControls
-            savedCount={finder.savedCount}
-            savedOnly={finder.filters.savedOnly}
-            onToggleSavedOnly={finder.setSavedOnly}
-            onClearSaved={finder.clearSavedCamps}
-          />
-
-          <CampDetailPanel
-            camp={finder.selectedCamp}
-            isSaved={finder.selectedCamp ? finder.savedCampIds.has(finder.selectedCamp.id) : false}
-            isVisibleInResults={finder.selectedCampVisible}
-            onToggleSaved={finder.toggleSavedCamp}
-          />
-        </aside>
+        </main>
       </div>
-    </section>
+    </div>
   );
 }
-

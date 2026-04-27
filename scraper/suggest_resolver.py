@@ -93,7 +93,7 @@ def _find_camp_url(client: anthropic.Anthropic, camp_name: str) -> Optional[str]
         message = client.messages.create(
             model="claude-haiku-4-5",
             max_tokens=256,
-            tools=[{"type": "web_search_20260209", "name": "web_search", "max_uses": 3}],
+            tools=[{"type": "web_search_20260209", "name": "web_search", "max_uses": 3, "allowed_callers": ["direct"]}],
             messages=[{"role": "user", "content": prompt}],
         )
         for block in reversed(message.content):

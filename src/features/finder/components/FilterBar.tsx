@@ -44,9 +44,7 @@ const SORT_OPTIONS: Array<{ value: FinderSort; label: string }> = [
   { value: 'current', label: 'Current first' },
 ];
 
-function labelCls() {
-  return 'block text-[11px] font-bold uppercase tracking-[0.06em] text-stone-400 mb-1.5';
-}
+const labelCls = 'block text-[11px] font-bold uppercase tracking-[0.06em] text-stone-400 mb-1.5';
 
 export default function FilterBar({
   filters,
@@ -67,7 +65,7 @@ export default function FilterBar({
 
         {/* Search */}
         <div>
-          <label className={labelCls()}>Search</label>
+          <label className={labelCls}>Search</label>
           <input
             className={inputCls}
             type="search"
@@ -79,7 +77,7 @@ export default function FilterBar({
 
         {/* Type */}
         <div>
-          <label className={labelCls()}>Type</label>
+          <label className={labelCls}>Type</label>
           <select
             className={selectCls}
             value={filters.type}
@@ -95,7 +93,7 @@ export default function FilterBar({
         {/* Age + Distance */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className={labelCls()}>Age</label>
+            <label className={labelCls}>Age</label>
             <select
               className={selectCls}
               value={filters.age == null ? '' : String(filters.age)}
@@ -112,7 +110,7 @@ export default function FilterBar({
             </select>
           </div>
           <div>
-            <label className={labelCls()}>Distance</label>
+            <label className={labelCls}>Distance</label>
             <select
               className={selectCls}
               value={filters.maxDistance == null ? '' : String(filters.maxDistance)}
@@ -132,7 +130,7 @@ export default function FilterBar({
         {/* Max cost + Aid */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className={labelCls()}>Max cost / wk</label>
+            <label className={labelCls}>Max cost / wk</label>
             <select
               className={selectCls}
               value={filters.maxCost == null ? '' : String(filters.maxCost)}
@@ -146,7 +144,7 @@ export default function FilterBar({
             </select>
           </div>
           <div>
-            <label className={labelCls()}>Aid</label>
+            <label className={labelCls}>Aid</label>
             <select
               className={selectCls}
               value={filters.aidFilter}
@@ -163,7 +161,7 @@ export default function FilterBar({
 
         {/* Season */}
         <div>
-          <label className={labelCls()}>Season</label>
+          <label className={labelCls}>Season</label>
           <select
             className={selectCls}
             value={filters.season}
@@ -178,7 +176,7 @@ export default function FilterBar({
         {/* Data year + Sort */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className={labelCls()}>Data year</label>
+            <label className={labelCls}>Data year</label>
             <select
               className={selectCls}
               value={filters.freshnessFilter}
@@ -194,7 +192,7 @@ export default function FilterBar({
             </select>
           </div>
           <div>
-            <label className={labelCls()}>Sort</label>
+            <label className={labelCls}>Sort</label>
             <select
               className={selectCls}
               value={filters.sort}
@@ -210,7 +208,7 @@ export default function FilterBar({
         {/* Organization list */}
         {orgs.length > 0 && (
           <div>
-            <p className={labelCls()}>Organization</p>
+            <p className={labelCls}>Organization</p>
             {filters.selectedOrg != null && (
               <button
                 type="button"

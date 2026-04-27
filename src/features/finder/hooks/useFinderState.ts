@@ -76,9 +76,11 @@ export function useFinderState(): FinderState {
   const navigate = useNavigate();
   const initialShareState = parseFinderShareState(location.search);
   const sharedIdsOnLoad = parseSharedIds(location.search);
-  const isSharedMode = sharedIdsOnLoad != null;
+  const [isSharedMode, setIsSharedMode] = useState(sharedIdsOnLoad != null);
   const [filters, setFiltersState] = useState<FinderFilters>(() =>
-    isSharedMode ? { ...initialShareState.filters, savedOnly: true } : initialShareState.filters,
+    sharedIdsOnLoad != null
+      ? { ...initialShareState.filters, savedOnly: true }
+      : initialShareState.filters,
   );
   const [selectedCampId, setSelectedCampId] = useState<string | null>(
     initialShareState.selectedCampId,
@@ -222,6 +224,7 @@ export function useFinderState(): FinderState {
 
   function updateFilters(updates: Partial<FinderFilters>): void {
     setFiltersState((current) => ({ ...current, ...updates }));
+    setIsSharedMode(false);
   }
 
   return {
@@ -254,7 +257,10 @@ export function useFinderState(): FinderState {
     selectCamp: (campId) => setSelectedCampId(campId),
     toggleSavedCamp: (campId) =>
       setSavedCampIdsState((current) => toggleSavedCampId(current, campId)),
-    clearSavedCamps: () => setSavedCampIdsState(new Set()),
+    clearSavedCamps: () => {
+      setSavedCampIdsState(new Set());
+      updateFilters({ savedOnly: false });
+    },
     resetFilters: () => setFiltersState(DEFAULT_FINDER_FILTERS),
     retry: () => setReloadToken((current) => current + 1),
   };

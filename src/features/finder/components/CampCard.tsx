@@ -51,7 +51,12 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         role="button"
         tabIndex={0}
         onClick={() => setOpen((o) => !o)}
-        onKeyDown={(e) => e.key === 'Enter' && setOpen((o) => !o)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setOpen((o) => !o);
+          }
+        }}
         className={[
           'grid cursor-pointer items-center gap-2 px-4 py-2.5 transition-colors',
           'grid-cols-[1fr_32px_48px] sm:grid-cols-[1fr_90px_100px_80px_32px_48px]',

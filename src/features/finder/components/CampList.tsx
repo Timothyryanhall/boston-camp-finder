@@ -30,16 +30,16 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
     >
       {/* Sticky column header */}
       <div className="sticky top-[61px] z-10 grid grid-cols-[1fr_32px_48px] gap-2 border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3">
-        {['Camp', 'Ages', 'Cost / wk', 'Distance', '', 'Save'].map((h, i) => (
+        {(['Camp', 'Ages', 'Cost / wk', 'Distance', 'Link', 'Save'] as const).map((h, i) => (
           <div
-            key={i}
+            key={h}
             className={[
               'text-[10px] font-bold uppercase tracking-widest text-stone-400',
               i === 0 ? 'text-left' : i === 5 ? 'text-center' : 'text-right',
               i >= 1 && i <= 4 ? 'hidden sm:block' : '',
             ].join(' ')}
           >
-            {h}
+            {h === 'Link' ? '' : h}
           </div>
         ))}
       </div>

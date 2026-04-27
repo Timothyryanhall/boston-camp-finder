@@ -40,7 +40,7 @@ function parseBoolean(value: string | null): boolean {
 }
 
 function isFinderSeason(value: string | null): value is FinderSeason {
-  return value === 'spring' || value === 'summer' || value === 'fall' || value === 'winter';
+  return value === 'spring' || value === 'summer' || value === 'fall' || value === 'winter' || value === 'all';
 }
 
 function isFinderSort(value: string | null): value is FinderSort {

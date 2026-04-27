@@ -5,10 +5,6 @@ import App from './App';
 import AdminPage from '../routes/AdminPage';
 import FinderPage from '../routes/FinderPage';
 
-export const routerFuture = {
-  v7_startTransition: true,
-} as const;
-
 export const appRoutes: RouteObject[] = [
   {
     path: '/',
@@ -20,6 +16,4 @@ export const appRoutes: RouteObject[] = [
   },
 ];
 
-export const router = createBrowserRouter(appRoutes, {
-  future: routerFuture,
-});
+export const router = createBrowserRouter(appRoutes);

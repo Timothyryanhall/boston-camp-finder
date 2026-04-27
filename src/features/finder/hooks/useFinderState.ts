@@ -39,6 +39,7 @@ export interface FinderState {
   typeOptions: CampType[];
   orgCounts: Record<string, number>;
   lastScrapedLabel: string | null;
+  isSharedMode: boolean;
   setFilters: (updates: Partial<FinderFilters>) => void;
   setQuery: (query: string) => void;
   setSeason: (season: FinderSeason) => void;
@@ -62,6 +63,14 @@ function normalizePathSearch(search: string): string {
   return search.startsWith('?') ? search.slice(1) : search;
 }
 
+function parseSharedIds(search: string): Set<string> | null {
+  const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
+  const shared = params.get('shared');
+  if (shared == null) return null;
+  const ids = shared.split(',').map((s) => s.trim()).filter(Boolean);
+  return ids.length > 0 ? new Set(ids) : new Set();
+}
+
 export function useFinderState(): FinderState {
   const location = useLocation();
   const navigate = useNavigate();
@@ -74,8 +83,10 @@ export function useFinderState(): FinderState {
   const [status, setStatus] = useState<FinderLoadStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
-  const [savedCampIds, setSavedCampIdsState] = useState<Set<string>>(() =>
-    loadSavedCampIds(),
+  const sharedIdsOnLoad = parseSharedIds(location.search);
+  const isSharedMode = sharedIdsOnLoad != null;
+  const [savedCampIds, setSavedCampIdsState] = useState<Set<string>>(
+    () => sharedIdsOnLoad ?? loadSavedCampIds(),
   );
   const lastWrittenSearchRef = useRef(normalizePathSearch(location.search));
   const skipNextSearchWriteRef = useRef(false);
@@ -225,6 +236,7 @@ export function useFinderState(): FinderState {
     typeOptions,
     orgCounts,
     lastScrapedLabel,
+    isSharedMode,
     setFilters: updateFilters,
     setQuery: (query) => updateFilters({ query }),
     setSeason: (season) => updateFilters({ season }),

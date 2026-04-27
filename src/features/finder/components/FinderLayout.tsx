@@ -24,6 +24,7 @@ export default function FinderLayout(finder: FinderState) {
         <SavedControls
           savedCount={finder.savedCount}
           savedOnly={finder.filters.savedOnly}
+          savedCampIds={finder.savedCampIds}
           onToggleSavedOnly={finder.setSavedOnly}
           onClearSaved={finder.clearSavedCamps}
         />
@@ -108,6 +109,14 @@ export default function FinderLayout(finder: FinderState) {
             </div>
           ) : (
             <div className="space-y-3">
+              {finder.isSharedMode && (
+                <div className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800">
+                  <span className="font-bold">Viewing a shared list</span>
+                  {' — '}{finder.savedCount} saved camp{finder.savedCount !== 1 ? 's' : ''}.
+                  {' '}Add or remove camps, then copy your own link.
+                </div>
+              )}
+
               <ResultsSummary
                 visibleCamps={finder.visibleCamps}
                 totalCount={finder.camps.length}

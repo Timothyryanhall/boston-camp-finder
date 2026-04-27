@@ -33,7 +33,7 @@ export default function FinderLayout(finder: FinderState) {
   );
 
   return (
-    <div className="mx-auto max-w-[1260px] px-6 py-6 pb-12">
+    <div className="mx-auto max-w-[1260px] px-3 py-4 pb-12 sm:px-6 sm:py-6">
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
 
         {/* ── Desktop Sidebar ── */}

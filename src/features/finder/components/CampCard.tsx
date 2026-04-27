@@ -53,8 +53,8 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         onClick={() => setOpen((o) => !o)}
         onKeyDown={(e) => e.key === 'Enter' && setOpen((o) => !o)}
         className={[
-          'grid cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors',
-          'grid-cols-[1fr_90px_100px_80px_32px_48px]',
+          'grid cursor-pointer items-center gap-2 px-4 py-2.5 transition-colors',
+          'grid-cols-[1fr_32px_48px] sm:grid-cols-[1fr_90px_100px_80px_32px_48px]',
           open ? 'bg-stone-50' : 'hover:bg-stone-50/60',
         ].join(' ')}
       >
@@ -72,17 +72,17 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         </div>
 
         {/* Ages */}
-        <div className="text-right text-xs text-stone-400">
+        <div className="hidden text-right text-xs text-stone-400 sm:block">
           {camp.ageRange || '—'}
         </div>
 
         {/* Cost */}
-        <div className="text-right text-xs font-medium text-stone-700">
+        <div className="hidden text-right text-xs font-medium text-stone-700 sm:block">
           {camp.costLabel || '—'}
         </div>
 
         {/* Distance */}
-        <div className="text-right text-xs text-stone-400">
+        <div className="hidden text-right text-xs text-stone-400 sm:block">
           {camp.distanceMiles != null ? `${camp.distanceMiles.toFixed(1)} mi` : '—'}
         </div>
 
@@ -123,7 +123,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
 
       {/* Expanded detail */}
       {open && (
-        <div className="border-t border-stone-100 bg-stone-50 px-5 pb-5 pt-4">
+        <div className="border-t border-stone-100 bg-stone-50 px-4 pb-5 pt-4">
           {/* Labeled detail grid */}
           <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
             {detailRows.map(([label, value]) => (

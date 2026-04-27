@@ -1159,15 +1159,17 @@ function App() {
             </div>
 
             {/* Saved camps panel */}
-            {savedIds.size > 0 && (
+            {(savedIds.size > 0 || showSavedOnly) && (
               <div style={{ borderTop: `1px solid ${T.borderLight}`, paddingTop: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: T.amber }}>
                     ★ Saved ({savedIds.size})
                   </span>
-                  <button onClick={() => setSavedIds(new Set())} style={{ fontSize: 11, color: T.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
-                    Clear all
-                  </button>
+                  {savedIds.size > 0 && (
+                    <button onClick={() => { setSavedIds(new Set()); setShowSavedOnly(false); }} style={{ fontSize: 11, color: T.muted, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+                      Clear all
+                    </button>
+                  )}
                 </div>
                 <button onClick={() => setShowSavedOnly(o => !o)} style={{
                   width: '100%', padding: '7px 10px', marginBottom: 6,
@@ -1175,20 +1177,27 @@ function App() {
                   borderRadius: T.radiusSm, background: showSavedOnly ? T.amberLight : 'none',
                   color: showSavedOnly ? T.amber : T.ink,
                   fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit',
-                }}>{showSavedOnly ? '★ Showing saved only' : '☆ Show saved only'}</button>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                  <button onClick={copyShareLink} style={{
-                    padding: '7px 10px', border: `1.5px solid ${T.border}`, borderRadius: T.radiusSm,
-                    background: copyStatus === 'copied' ? T.greenLight : 'none',
-                    color: copyStatus === 'copied' ? T.green : T.ink,
-                    fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
-                  }}>{copyStatus === 'copied' ? '✓ Copied!' : '🔗 Copy link'}</button>
-                  <button onClick={() => window.print()} style={{
-                    padding: '7px 10px', border: `1.5px solid ${T.border}`, borderRadius: T.radiusSm,
-                    background: 'none', color: T.ink,
-                    fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-                  }}>🖨 Print</button>
-                </div>
+                }}>{showSavedOnly ? '★ Showing saved only' : savedIds.size > 0 ? '☆ Show saved only' : 'Show all camps'}</button>
+                {showSavedOnly && savedIds.size === 0 && (
+                  <div style={{ fontSize: 11, color: T.muted, marginBottom: 6 }}>
+                    No camps are saved. Showing all camps will restore your filtered results.
+                  </div>
+                )}
+                {savedIds.size > 0 && (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                    <button onClick={copyShareLink} style={{
+                      padding: '7px 10px', border: `1.5px solid ${T.border}`, borderRadius: T.radiusSm,
+                      background: copyStatus === 'copied' ? T.greenLight : 'none',
+                      color: copyStatus === 'copied' ? T.green : T.ink,
+                      fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
+                    }}>{copyStatus === 'copied' ? '✓ Copied!' : '🔗 Copy link'}</button>
+                    <button onClick={() => window.print()} style={{
+                      padding: '7px 10px', border: `1.5px solid ${T.border}`, borderRadius: T.radiusSm,
+                      background: 'none', color: T.ink,
+                      fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+                    }}>🖨 Print</button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1268,12 +1277,11 @@ function App() {
               borderBottom: 'none',
               position: 'sticky', top: 67, zIndex: 10,
             }}>
-              <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 90px 100px 80px 32px', gap: 12, padding: '8px 16px' }}>
-                {['Camp', 'Ages', 'Cost / wk', 'Distance', ''].map((h, i) => (
-                  <div key={i} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: T.muted, textAlign: i > 0 ? 'right' : 'left' }}>{h}</div>
+              <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 90px 100px 80px 32px 48px', gap: 12, padding: '8px 16px' }}>
+                {['Camp', 'Ages', 'Cost / wk', 'Distance', '', 'Save'].map((h, i) => (
+                  <div key={i} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: T.muted, textAlign: i === 0 ? 'left' : i === 5 ? 'center' : 'right' }}>{h}</div>
                 ))}
               </div>
-              <div style={{ width: 48 }} />
             </div>
           )}
 

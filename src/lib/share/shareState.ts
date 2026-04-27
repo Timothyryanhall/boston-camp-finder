@@ -140,10 +140,6 @@ export function stringifyFinderShareState(state: FinderShareState): string {
     params.set('org', filters.selectedOrg);
   }
 
-  if (selectedCampId != null && selectedCampId.trim() !== '') {
-    params.set('selected', selectedCampId.trim());
-  }
-
   return params.toString();
 }
 

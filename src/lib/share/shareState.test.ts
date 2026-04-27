@@ -73,16 +73,16 @@ describe('stringifyFinderShareState', () => {
     expect(params.get('sort')).toBeNull();
   });
 
-  it('includes selectedCampId when set', () => {
+  it('does not include selectedCampId in the URL', () => {
     const result = stringifyFinderShareState({
       filters: DEFAULT_FINDER_FILTERS,
       selectedCampId: 'camp-a',
     });
     const params = new URLSearchParams(result);
-    expect(params.get('selected')).toBe('camp-a');
+    expect(params.get('selected')).toBeNull();
   });
 
-  it('round-trips through parse without data loss', () => {
+  it('round-trips filters through parse without data loss', () => {
     const original = {
       filters: makeFilters({
         query: 'zoo',
@@ -100,7 +100,8 @@ describe('stringifyFinderShareState', () => {
     const restored = parseFinderShareState(serialized);
 
     expect(restored.filters).toEqual(original.filters);
-    expect(restored.selectedCampId).toBe(original.selectedCampId);
+    // selectedCampId is intentionally not serialized to the URL
+    expect(restored.selectedCampId).toBeNull();
   });
 });
 

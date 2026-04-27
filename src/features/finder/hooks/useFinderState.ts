@@ -143,21 +143,6 @@ export function useFinderState(): FinderState {
     saveSavedCampIds(savedCampIds);
   }, [savedCampIds]);
 
-  useEffect(() => {
-    if (status !== 'ready' || camps.length === 0) {
-      return;
-    }
-
-    if (selectedCampId != null && camps.some((camp) => camp.id === selectedCampId)) {
-      return;
-    }
-
-    const nextSelectedCampId = camps[0]?.id ?? null;
-
-    if (nextSelectedCampId !== selectedCampId) {
-      setSelectedCampId(nextSelectedCampId);
-    }
-  }, [camps, selectedCampId, status]);
 
   useEffect(() => {
     if (skipNextSearchWriteRef.current) {

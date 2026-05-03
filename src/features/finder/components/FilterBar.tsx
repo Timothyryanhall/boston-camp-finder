@@ -1,5 +1,6 @@
 import type { CampType, FinderFilters, FinderSeason, FinderSort } from '../types';
 import { DEFAULT_FINDER_FILTERS } from '../../../lib/share/shareState';
+import FeedbackBox from './FeedbackBox';
 
 interface FilterBarProps {
   filters: FinderFilters;
@@ -265,7 +266,10 @@ export default function FilterBar({
             </div>
           </div>
         )}
+
       </div>
+
+      <FeedbackBox />
     </div>
   );
 }

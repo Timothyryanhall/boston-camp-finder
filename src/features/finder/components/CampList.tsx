@@ -25,11 +25,11 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
 
   return (
     <div
-      className="[overflow:clip] rounded-xl border border-stone-200 bg-white"
+      className="rounded-xl border border-stone-200 bg-white"
       style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
     >
-      {/* Sticky desktop column header */}
-      <div className="hidden border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 sm:sticky sm:top-[61px] sm:z-10 sm:grid sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3">
+      {/* Sticky desktop column header — kept outside [overflow:clip] so position:sticky works */}
+      <div className="hidden border-b-[1.5px] border-stone-200 bg-sand-100 px-4 py-2 sm:sticky sm:top-[89px] sm:z-10 sm:grid sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3">
           <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-400">
             Camp
           </div>
@@ -50,14 +50,17 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
           </div>
       </div>
 
-      {camps.map((camp) => (
-        <CampCard
-          key={camp.id}
-          camp={camp}
-          isSaved={savedCampIds.has(camp.id)}
-          onToggleSaved={onToggleSavedCamp}
-        />
-      ))}
+      {/* overflow:clip on the inner wrapper (not the outer) so border-radius clips cards without breaking sticky */}
+      <div className="[overflow:clip] rounded-xl sm:rounded-t-none">
+        {camps.map((camp) => (
+          <CampCard
+            key={camp.id}
+            camp={camp}
+            isSaved={savedCampIds.has(camp.id)}
+            onToggleSaved={onToggleSavedCamp}
+          />
+        ))}
+      </div>
     </div>
   );
 }

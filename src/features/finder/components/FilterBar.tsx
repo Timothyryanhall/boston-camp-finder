@@ -1,10 +1,12 @@
 import type { CampType, FinderFilters, FinderSeason, FinderSort } from '../types';
+import { DEFAULT_FINDER_FILTERS } from '../../../lib/share/shareState';
 
 interface FilterBarProps {
   filters: FinderFilters;
   typeOptions: CampType[];
   orgCounts: Record<string, number>;
   onFiltersChange: (updates: Partial<FinderFilters>) => void;
+  onResetFilters: () => void;
 }
 
 const inputCls =
@@ -51,14 +53,35 @@ export default function FilterBar({
   typeOptions,
   orgCounts,
   onFiltersChange,
+  onResetFilters,
 }: FilterBarProps) {
   const orgs = Object.keys(orgCounts).sort();
+
+  const isFiltered =
+    filters.query !== DEFAULT_FINDER_FILTERS.query ||
+    filters.type !== DEFAULT_FINDER_FILTERS.type ||
+    filters.age !== DEFAULT_FINDER_FILTERS.age ||
+    filters.maxDistance !== DEFAULT_FINDER_FILTERS.maxDistance ||
+    filters.maxCost !== DEFAULT_FINDER_FILTERS.maxCost ||
+    filters.aidFilter !== DEFAULT_FINDER_FILTERS.aidFilter ||
+    filters.season !== DEFAULT_FINDER_FILTERS.season ||
+    filters.freshnessFilter !== DEFAULT_FINDER_FILTERS.freshnessFilter ||
+    filters.selectedOrg !== DEFAULT_FINDER_FILTERS.selectedOrg;
 
   return (
     <div>
       {/* Header */}
-      <div className="border-b border-stone-100 bg-teal-50/50 px-4 py-3.5">
+      <div className="flex items-center justify-between border-b border-stone-100 bg-teal-50/50 px-4 py-3.5">
         <p className="text-[13px] font-bold text-teal-700">Find a good fit</p>
+        {isFiltered && (
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="text-[11px] font-semibold text-teal-600 hover:underline"
+          >
+            Clear all
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 overflow-y-auto px-4 py-4" style={{ maxHeight: 'calc(100dvh - 180px)' }}>

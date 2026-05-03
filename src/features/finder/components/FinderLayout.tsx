@@ -18,6 +18,7 @@ export default function FinderLayout(finder: FinderState) {
         typeOptions={finder.typeOptions}
         orgCounts={finder.orgCounts}
         onFiltersChange={finder.setFilters}
+        onResetFilters={finder.resetFilters}
       />
 
       {(finder.savedCount > 0 || finder.filters.savedOnly) && (

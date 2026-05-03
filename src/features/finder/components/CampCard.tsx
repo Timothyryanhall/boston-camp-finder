@@ -70,7 +70,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
             <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[13.5px] font-bold text-stone-900">
               {camp.name}
             </div>
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] text-stone-400">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[12.5px] text-stone-500">
               {camp.organization}
             </div>
             <div className="mt-0.5 text-[11px] font-medium text-stone-500 sm:hidden">
@@ -80,7 +80,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         </div>
 
         {/* Ages */}
-        <div className="hidden text-right text-xs text-stone-400 sm:block">
+        <div className="hidden text-right text-xs text-stone-500 sm:block">
           {camp.ageRange || '—'}
         </div>
 
@@ -90,7 +90,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
         </div>
 
         {/* Distance */}
-        <div className="hidden text-right text-xs text-stone-400 sm:block">
+        <div className="hidden text-right text-xs text-stone-500 sm:block">
           {camp.distanceMiles != null ? `${camp.distanceMiles.toFixed(1)} mi` : '—'}
         </div>
 
@@ -136,10 +136,10 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
           <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
             {detailRows.map(([label, value]) => (
               <div key={label}>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                <div className="text-[11px] font-bold uppercase tracking-widest text-stone-500">
                   {label}
                 </div>
-                <div className={['mt-0.5 text-[13px] font-medium', value ? 'text-stone-700' : 'text-stone-300'].join(' ')}>
+                <div className={['mt-0.5 text-[13px] font-medium', value ? 'text-stone-700' : 'text-stone-400'].join(' ')}>
                   {value ?? '—'}
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
                 href={websiteUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[13px] font-semibold text-stone-400 underline decoration-stone-200 hover:text-stone-600"
+                className="text-[13px] font-semibold text-stone-500 underline decoration-stone-300 hover:text-stone-700"
               >
                 Camp website
               </a>

@@ -241,7 +241,7 @@ export default function FilterBar({
                 ← All organizations
               </button>
             )}
-            <div className="flex max-h-52 flex-col gap-0.5 overflow-y-auto">
+            <div className="flex max-h-52 flex-col gap-0.5 overflow-y-auto rounded-lg border border-stone-200 bg-stone-50/50 p-1">
               {orgs.map((org) => (
                 <button
                   key={org}

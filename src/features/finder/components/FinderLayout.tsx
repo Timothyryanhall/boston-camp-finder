@@ -137,7 +137,7 @@ export default function FinderLayout(finder: FinderState) {
                 totalCount={finder.camps.length}
               />
 
-              <div className="sticky top-[61px] z-20 -mx-3 border-y border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm lg:hidden">
+              <div className="sticky top-[110px] z-20 -mx-3 border-y border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm sm:top-[89px] lg:hidden">
                 <button
                   type="button"
                   onClick={() => setMobileFiltersOpen(true)}

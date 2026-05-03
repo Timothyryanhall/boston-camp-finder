@@ -4,9 +4,23 @@ import FilterBar from './FilterBar';
 import CampList from './CampList';
 import ResultsSummary from './ResultsSummary';
 import SavedControls from './SavedControls';
+import { DEFAULT_FINDER_FILTERS } from '../../../lib/share/shareState';
 
 export default function FinderLayout(finder: FinderState) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const f = finder.filters;
+  const activeFilterCount = [
+    f.query !== DEFAULT_FINDER_FILTERS.query,
+    f.type !== DEFAULT_FINDER_FILTERS.type,
+    f.age !== DEFAULT_FINDER_FILTERS.age,
+    f.maxDistance !== DEFAULT_FINDER_FILTERS.maxDistance,
+    f.maxCost !== DEFAULT_FINDER_FILTERS.maxCost,
+    f.aidFilter !== DEFAULT_FINDER_FILTERS.aidFilter,
+    f.season !== DEFAULT_FINDER_FILTERS.season,
+    f.freshnessFilter !== DEFAULT_FINDER_FILTERS.freshnessFilter,
+    f.selectedOrg !== DEFAULT_FINDER_FILTERS.selectedOrg,
+  ].filter(Boolean).length;
 
   const sidebar = (
     <div
@@ -130,6 +144,11 @@ export default function FinderLayout(finder: FinderState) {
                   className="flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 shadow-sm hover:bg-stone-50"
                 >
                   ⚙ Filters
+                  {activeFilterCount > 0 && (
+                    <span className="rounded-full bg-teal-600 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+                      {activeFilterCount}
+                    </span>
+                  )}
                   {finder.savedCount > 0 && (
                     <span className="rounded-full bg-amber-400 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
                       {finder.savedCount}

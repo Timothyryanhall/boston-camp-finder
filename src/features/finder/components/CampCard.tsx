@@ -34,7 +34,6 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
   const primaryUrl = signupUrl ?? websiteUrl;
 
   const detailRows: [string, string | null | undefined][] = [
-    ['Organization', camp.organization || null],
     ['Location', camp.neighborhood || null],
     ['Hours', camp.hoursLabel || null],
     ['When', camp.weeksLabel || null],

@@ -229,7 +229,7 @@ export default function FilterBar({
                     })
                   }
                   className={[
-                    'flex items-center justify-between rounded px-2 py-1.5 text-left text-xs font-medium transition',
+                    'flex items-center justify-between rounded px-2 py-1.5 text-left text-sm font-medium transition',
                     org === filters.selectedOrg
                       ? 'bg-teal-600 text-white'
                       : 'text-stone-700 hover:bg-stone-50',

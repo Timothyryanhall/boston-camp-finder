@@ -70,7 +70,7 @@ export default function CampCard({ camp, isSaved, onToggleSaved }: CampCardProps
             <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[13.5px] font-bold text-stone-900">
               {camp.name}
             </div>
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[11.5px] text-stone-400">
+            <div className="overflow-hidden text-ellipsis whitespace-nowrap text-[12.5px] text-stone-500">
               {camp.organization}
             </div>
             <div className="mt-0.5 text-[11px] font-medium text-stone-500 sm:hidden">

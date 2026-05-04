@@ -1,12 +1,14 @@
+export type FinderTab = 'browse' | 'saved';
+
 interface FinderTabsProps {
-  activeTab: 'browse' | 'saved';
+  activeTab: FinderTab;
   savedCount: number;
-  onTabChange: (tab: 'browse' | 'saved') => void;
+  onTabChange: (tab: FinderTab) => void;
 }
 
 export default function FinderTabs({ activeTab, savedCount, onTabChange }: FinderTabsProps) {
   return (
-    <div className="flex gap-1 rounded-xl border border-stone-200 bg-stone-100 p-1">
+    <div role="tablist" className="flex gap-1 rounded-xl border border-stone-200 bg-stone-100 p-1">
       {(['browse', 'saved'] as const).map((tab) => {
         const isActive = activeTab === tab;
         const label =
@@ -19,6 +21,8 @@ export default function FinderTabs({ activeTab, savedCount, onTabChange }: Finde
         return (
           <button
             key={tab}
+            role="tab"
+            aria-selected={isActive}
             type="button"
             onClick={() => onTabChange(tab)}
             className={[

@@ -146,7 +146,6 @@ function makeFilters(overrides: Partial<FinderFilters> = {}): FinderFilters {
     sort: 'distance',
     maxCost: null,
     aidFilter: 'all',
-    freshnessFilter: 'all',
     selectedOrg: null,
     ...overrides,
   };
@@ -358,15 +357,6 @@ describe('applyFilters', () => {
     const aidKnown = applyFilters(camps, makeFilters({ aidFilter: 'known' }));
     expect(aidKnown.every((c) => c.financialAidAvailable != null)).toBe(true);
     expect(aidKnown.some((c) => c.financialAidAvailable === false)).toBe(true);
-  });
-
-  it('filters by data freshness', () => {
-    const current = applyFilters(camps, makeFilters({ freshnessFilter: 'current' }));
-    expect(current.every((c) => !c.isStale)).toBe(true);
-
-    const stale = applyFilters(camps, makeFilters({ freshnessFilter: 'stale' }));
-    expect(stale.every((c) => c.isStale)).toBe(true);
-    expect(stale.map((c) => c.id)).toContain('museum-of-science-robotics-lab');
   });
 
   it('filters by organization name', () => {

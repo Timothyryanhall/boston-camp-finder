@@ -66,7 +66,6 @@ export default function FilterBar({
     filters.maxCost !== DEFAULT_FINDER_FILTERS.maxCost ||
     filters.aidFilter !== DEFAULT_FINDER_FILTERS.aidFilter ||
     filters.season !== DEFAULT_FINDER_FILTERS.season ||
-    filters.freshnessFilter !== DEFAULT_FINDER_FILTERS.freshnessFilter ||
     filters.selectedOrg !== DEFAULT_FINDER_FILTERS.selectedOrg;
 
   return (
@@ -197,36 +196,18 @@ export default function FilterBar({
           </select>
         </div>
 
-        {/* Data year + Sort */}
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className={labelCls}>Data year</label>
-            <select
-              className={selectCls}
-              value={filters.freshnessFilter}
-              onChange={(e) =>
-                onFiltersChange({
-                  freshnessFilter: e.target.value as FinderFilters['freshnessFilter'],
-                })
-              }
-            >
-              <option value="all">Any</option>
-              <option value="current">Current</option>
-              <option value="stale">Prior</option>
-            </select>
-          </div>
-          <div>
-            <label className={labelCls}>Sort</label>
-            <select
-              className={selectCls}
-              value={filters.sort}
-              onChange={(e) => onFiltersChange({ sort: e.target.value as FinderSort })}
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
+        {/* Sort */}
+        <div>
+          <label className={labelCls}>Sort</label>
+          <select
+            className={selectCls}
+            value={filters.sort}
+            onChange={(e) => onFiltersChange({ sort: e.target.value as FinderSort })}
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
         </div>
 
         {/* Organization list */}

@@ -2,7 +2,6 @@ import type {
   CampType,
   FinderAidFilter,
   FinderFilters,
-  FinderFreshnessFilter,
   FinderSeason,
   FinderSort,
 } from '../../features/finder/types';
@@ -16,7 +15,6 @@ export const DEFAULT_FINDER_FILTERS: FinderFilters = {
   sort: 'distance',
   maxCost: null,
   aidFilter: 'all',
-  freshnessFilter: 'all',
   selectedOrg: null,
 };
 
@@ -46,10 +44,6 @@ function isAidFilter(value: string | null): value is FinderAidFilter {
   return value === 'yes' || value === 'known' || value === 'all';
 }
 
-function isFreshnessFilter(value: string | null): value is FinderFreshnessFilter {
-  return value === 'current' || value === 'stale' || value === 'all';
-}
-
 function normalizeSearch(search: string): URLSearchParams {
   return new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
 }
@@ -67,7 +61,6 @@ export function parseFinderShareState(search: string): FinderShareState {
   const seasonParam = params.get('season');
   const sortParam = params.get('sort');
   const aidParam = params.get('aid');
-  const freshParam = params.get('fresh');
 
   return {
     filters: {
@@ -79,7 +72,6 @@ export function parseFinderShareState(search: string): FinderShareState {
       sort: isFinderSort(sortParam) ? sortParam : DEFAULT_FINDER_FILTERS.sort,
       maxCost: parseNullableNumber(params.get('maxCost')),
       aidFilter: isAidFilter(aidParam) ? aidParam : DEFAULT_FINDER_FILTERS.aidFilter,
-      freshnessFilter: isFreshnessFilter(freshParam) ? freshParam : DEFAULT_FINDER_FILTERS.freshnessFilter,
       selectedOrg: params.get('org')?.trim() || null,
     },
     selectedCampId: params.get('selected')?.trim() || null,
@@ -122,10 +114,6 @@ export function stringifyFinderShareState(state: FinderShareState): string {
     params.set('aid', filters.aidFilter);
   }
 
-  if (filters.freshnessFilter !== DEFAULT_FINDER_FILTERS.freshnessFilter) {
-    params.set('fresh', filters.freshnessFilter);
-  }
-
   if (filters.selectedOrg != null) {
     params.set('org', filters.selectedOrg);
   }
@@ -143,7 +131,6 @@ export function hasActiveFinderFilters(filters: FinderFilters): boolean {
     filters.sort !== DEFAULT_FINDER_FILTERS.sort ||
     filters.maxCost != null ||
     filters.aidFilter !== DEFAULT_FINDER_FILTERS.aidFilter ||
-    filters.freshnessFilter !== DEFAULT_FINDER_FILTERS.freshnessFilter ||
     filters.selectedOrg != null
   );
 }

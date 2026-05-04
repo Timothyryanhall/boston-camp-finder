@@ -6,7 +6,6 @@ import type {
   CampType,
   FinderAidFilter,
   FinderFilters,
-  FinderFreshnessFilter,
   FinderSeason,
   FinderSort,
 } from '../types';
@@ -50,7 +49,6 @@ export interface FinderState {
   setSort: (sort: FinderSort) => void;
   setMaxCost: (maxCost: number | null) => void;
   setAidFilter: (aid: FinderAidFilter) => void;
-  setFreshnessFilter: (fresh: FinderFreshnessFilter) => void;
   setSelectedOrg: (org: string | null) => void;
   selectCamp: (campId: string | null) => void;
   toggleSavedCamp: (campId: string) => void;
@@ -238,7 +236,6 @@ export function useFinderState(): FinderState {
     setSort: (sort) => updateFilters({ sort }),
     setMaxCost: (maxCost) => updateFilters({ maxCost }),
     setAidFilter: (aidFilter) => updateFilters({ aidFilter }),
-    setFreshnessFilter: (freshnessFilter) => updateFilters({ freshnessFilter }),
     setSelectedOrg: (selectedOrg) => updateFilters({ selectedOrg }),
     selectCamp: (campId) => setSelectedCampId(campId),
     toggleSavedCamp: (campId) =>

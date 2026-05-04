@@ -34,10 +34,6 @@ function parseNullableNumber(value: string | null): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function parseBoolean(value: string | null): boolean {
-  return value === '1' || value === 'true';
-}
-
 function isFinderSeason(value: string | null): value is FinderSeason {
   return value === 'spring' || value === 'summer' || value === 'fall' || value === 'winter' || value === 'all';
 }

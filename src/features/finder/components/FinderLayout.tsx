@@ -35,12 +35,10 @@ export default function FinderLayout(finder: FinderState) {
         onResetFilters={finder.resetFilters}
       />
 
-      {(finder.savedCount > 0 || finder.filters.savedOnly) && (
+      {finder.savedCount > 0 && (
         <SavedControls
           savedCount={finder.savedCount}
-          savedOnly={finder.filters.savedOnly}
           savedCampIds={finder.savedCampIds}
-          onToggleSavedOnly={finder.setSavedOnly}
           onClearSaved={finder.clearSavedCamps}
         />
       )}

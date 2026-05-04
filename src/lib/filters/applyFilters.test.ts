@@ -143,7 +143,6 @@ function makeFilters(overrides: Partial<FinderFilters> = {}): FinderFilters {
     maxDistance: null,
     type: 'all',
     age: null,
-    savedOnly: false,
     sort: 'distance',
     maxCost: null,
     aidFilter: 'all',
@@ -162,26 +161,24 @@ describe('applyFilters', () => {
         season: 'summer',
         maxDistance: 3,
       }),
-      new Set(),
     );
 
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('franklin-park-zoo-zoo-crew');
   });
 
-  it('filters by type, age, and saved-only state', () => {
+  it('filters by type and age', () => {
     const result = applyFilters(
       camps,
       makeFilters({
         type: 'STEM',
         age: 11,
-        savedOnly: true,
       }),
-      new Set(['museum-of-science-robotics-lab']),
     );
 
-    expect(result).toHaveLength(1);
-    expect(result[0].id).toBe('museum-of-science-robotics-lab');
+    expect(result).toHaveLength(2);
+    expect(result.map((c) => c.id)).toContain('museum-of-science-robotics-lab');
+    expect(result.map((c) => c.id)).toContain('tech-foundry-youth-circuit');
   });
 
   it('matches canonical types instead of raw source labels', () => {
@@ -191,7 +188,6 @@ describe('applyFilters', () => {
         makeFilters({
           type: 'Sailing',
         }),
-        new Set(),
       ).map((camp) => camp.id),
     ).toEqual(['community-boating-harbor-sail']);
 
@@ -201,7 +197,6 @@ describe('applyFilters', () => {
         makeFilters({
           type: 'STEM',
         }),
-        new Set(),
       ).map((camp) => camp.id),
     ).toEqual([
       'community-boating-harbor-sail',
@@ -216,7 +211,6 @@ describe('applyFilters', () => {
       makeFilters({
         query: 'culture',
       }),
-      new Set(),
     );
 
     expect(result.map((camp) => camp.id)).toContain('city-stage-culture-lab');
@@ -228,7 +222,6 @@ describe('applyFilters', () => {
       makeFilters({
         age: 6,
       }),
-      new Set(),
     );
 
     expect(result.map((camp) => camp.id)).not.toContain(
@@ -249,7 +242,6 @@ describe('applyFilters', () => {
         makeFilters({
           age: 14,
         }),
-        new Set(),
       ).map((camp) => camp.id),
     ).toContain('city-stage-culture-lab');
 
@@ -259,7 +251,6 @@ describe('applyFilters', () => {
         makeFilters({
           age: 12,
         }),
-        new Set(),
       ).map((camp) => camp.id),
     ).not.toContain('city-stage-culture-lab');
   });
@@ -271,7 +262,6 @@ describe('applyFilters', () => {
         makeFilters({
           age: 12,
         }),
-        new Set(),
       ).map((camp) => camp.id),
     ).toContain('tech-foundry-youth-circuit');
 
@@ -281,14 +271,13 @@ describe('applyFilters', () => {
         makeFilters({
           age: 9,
         }),
-        new Set(),
       ).map((camp) => camp.id),
     ).not.toContain('tech-foundry-youth-circuit');
   });
 
   it('sorts by name, cost, currentness, and distance', () => {
     expect(
-      applyFilters(camps, makeFilters({ sort: 'name' }), new Set()).map(
+      applyFilters(camps, makeFilters({ sort: 'name' })).map(
         (camp) => camp.id,
       ),
     ).toEqual([
@@ -303,7 +292,7 @@ describe('applyFilters', () => {
     ]);
 
     expect(
-      applyFilters(camps, makeFilters({ sort: 'cost' }), new Set()).map(
+      applyFilters(camps, makeFilters({ sort: 'cost' })).map(
         (camp) => camp.id,
       ),
     ).toEqual([
@@ -318,7 +307,7 @@ describe('applyFilters', () => {
     ]);
 
     expect(
-      applyFilters(camps, makeFilters({ sort: 'current' }), new Set()).map(
+      applyFilters(camps, makeFilters({ sort: 'current' })).map(
         (camp) => camp.id,
       ),
     ).toEqual([
@@ -333,7 +322,7 @@ describe('applyFilters', () => {
     ]);
 
     expect(
-      applyFilters(camps, makeFilters({ sort: 'distance' }), new Set()).map(
+      applyFilters(camps, makeFilters({ sort: 'distance' })).map(
         (camp) => camp.id,
       ),
     ).toEqual([
@@ -352,7 +341,6 @@ describe('applyFilters', () => {
     const result = applyFilters(
       camps,
       makeFilters({ maxCost: 300 }),
-      new Set(),
     );
 
     const ids = result.map((c) => c.id);
@@ -364,19 +352,19 @@ describe('applyFilters', () => {
   });
 
   it('filters by financial aid availability', () => {
-    const aidYes = applyFilters(camps, makeFilters({ aidFilter: 'yes' }), new Set());
+    const aidYes = applyFilters(camps, makeFilters({ aidFilter: 'yes' }));
     expect(aidYes.every((c) => c.financialAidAvailable === true)).toBe(true);
 
-    const aidKnown = applyFilters(camps, makeFilters({ aidFilter: 'known' }), new Set());
+    const aidKnown = applyFilters(camps, makeFilters({ aidFilter: 'known' }));
     expect(aidKnown.every((c) => c.financialAidAvailable != null)).toBe(true);
     expect(aidKnown.some((c) => c.financialAidAvailable === false)).toBe(true);
   });
 
   it('filters by data freshness', () => {
-    const current = applyFilters(camps, makeFilters({ freshnessFilter: 'current' }), new Set());
+    const current = applyFilters(camps, makeFilters({ freshnessFilter: 'current' }));
     expect(current.every((c) => !c.isStale)).toBe(true);
 
-    const stale = applyFilters(camps, makeFilters({ freshnessFilter: 'stale' }), new Set());
+    const stale = applyFilters(camps, makeFilters({ freshnessFilter: 'stale' }));
     expect(stale.every((c) => c.isStale)).toBe(true);
     expect(stale.map((c) => c.id)).toContain('museum-of-science-robotics-lab');
   });
@@ -385,7 +373,6 @@ describe('applyFilters', () => {
     const result = applyFilters(
       camps,
       makeFilters({ selectedOrg: 'Franklin Park Zoo' }),
-      new Set(),
     );
 
     expect(result).toHaveLength(1);

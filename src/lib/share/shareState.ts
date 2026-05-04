@@ -13,7 +13,6 @@ export const DEFAULT_FINDER_FILTERS: FinderFilters = {
   maxDistance: null,
   type: 'all',
   age: null,
-  savedOnly: false,
   sort: 'distance',
   maxCost: null,
   aidFilter: 'all',
@@ -33,10 +32,6 @@ function parseNullableNumber(value: string | null): number | null {
 
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
-}
-
-function parseBoolean(value: string | null): boolean {
-  return value === '1' || value === 'true';
 }
 
 function isFinderSeason(value: string | null): value is FinderSeason {
@@ -81,7 +76,6 @@ export function parseFinderShareState(search: string): FinderShareState {
       maxDistance: parseNullableNumber(params.get('maxDistance')),
       type: readType(params.get('type')),
       age: parseNullableNumber(params.get('age')),
-      savedOnly: parseBoolean(params.get('savedOnly')),
       sort: isFinderSort(sortParam) ? sortParam : DEFAULT_FINDER_FILTERS.sort,
       maxCost: parseNullableNumber(params.get('maxCost')),
       aidFilter: isAidFilter(aidParam) ? aidParam : DEFAULT_FINDER_FILTERS.aidFilter,
@@ -116,10 +110,6 @@ export function stringifyFinderShareState(state: FinderShareState): string {
     params.set('age', String(filters.age));
   }
 
-  if (filters.savedOnly) {
-    params.set('savedOnly', '1');
-  }
-
   if (filters.sort !== DEFAULT_FINDER_FILTERS.sort) {
     params.set('sort', filters.sort);
   }
@@ -150,7 +140,6 @@ export function hasActiveFinderFilters(filters: FinderFilters): boolean {
     filters.maxDistance != null ||
     filters.type !== DEFAULT_FINDER_FILTERS.type ||
     filters.age != null ||
-    filters.savedOnly ||
     filters.sort !== DEFAULT_FINDER_FILTERS.sort ||
     filters.maxCost != null ||
     filters.aidFilter !== DEFAULT_FINDER_FILTERS.aidFilter ||

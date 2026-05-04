@@ -21,7 +21,7 @@ describe('parseFinderShareState', () => {
 
   it('parses all supported filter params', () => {
     const state = parseFinderShareState(
-      '?q=zoo&season=summer&type=STEM&maxDistance=5&age=8&savedOnly=1&sort=name&selected=camp-a',
+      '?q=zoo&season=summer&type=STEM&maxDistance=5&age=8&sort=name&selected=camp-a',
     );
 
     expect(state.filters.query).toBe('zoo');
@@ -29,7 +29,6 @@ describe('parseFinderShareState', () => {
     expect(state.filters.type).toBe('STEM');
     expect(state.filters.maxDistance).toBe(5);
     expect(state.filters.age).toBe(8);
-    expect(state.filters.savedOnly).toBe(true);
     expect(state.filters.sort).toBe('name');
     expect(state.selectedCampId).toBe('camp-a');
   });
@@ -38,13 +37,6 @@ describe('parseFinderShareState', () => {
     const state = parseFinderShareState('?season=rainy&sort=vibes');
     expect(state.filters.season).toBe(DEFAULT_FINDER_FILTERS.season);
     expect(state.filters.sort).toBe(DEFAULT_FINDER_FILTERS.sort);
-  });
-
-  it('treats savedOnly=true as true and any other value as false', () => {
-    expect(parseFinderShareState('?savedOnly=true').filters.savedOnly).toBe(true);
-    expect(parseFinderShareState('?savedOnly=1').filters.savedOnly).toBe(true);
-    expect(parseFinderShareState('?savedOnly=0').filters.savedOnly).toBe(false);
-    expect(parseFinderShareState('?savedOnly=yes').filters.savedOnly).toBe(false);
   });
 
   it('accepts search string without leading question mark', () => {
@@ -90,7 +82,6 @@ describe('stringifyFinderShareState', () => {
         type: 'Nature',
         maxDistance: 5,
         age: 8,
-        savedOnly: true,
         sort: 'cost',
       }),
       selectedCampId: 'camp-a',
@@ -100,7 +91,6 @@ describe('stringifyFinderShareState', () => {
     const restored = parseFinderShareState(serialized);
 
     expect(restored.filters).toEqual(original.filters);
-    // selectedCampId is intentionally not serialized to the URL
     expect(restored.selectedCampId).toBeNull();
   });
 });
@@ -116,7 +106,6 @@ describe('hasActiveFinderFilters', () => {
     expect(hasActiveFinderFilters(makeFilters({ type: 'STEM' }))).toBe(true);
     expect(hasActiveFinderFilters(makeFilters({ maxDistance: 5 }))).toBe(true);
     expect(hasActiveFinderFilters(makeFilters({ age: 8 }))).toBe(true);
-    expect(hasActiveFinderFilters(makeFilters({ savedOnly: true }))).toBe(true);
     expect(hasActiveFinderFilters(makeFilters({ sort: 'name' }))).toBe(true);
   });
 });

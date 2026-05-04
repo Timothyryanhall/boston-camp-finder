@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_FINDER_FILTERS } from '../../../lib/share/shareState';
@@ -30,6 +30,12 @@ const baseCamp: Camp = {
   signupUrl: null,
 };
 
+const savedCamp: Camp = {
+  ...baseCamp,
+  id: 'camp-b',
+  name: 'Camp B',
+};
+
 function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
   return {
     status: 'ready',
@@ -41,6 +47,7 @@ function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
     selectedCampVisible: false,
     visibleCamps: [baseCamp],
     savedCampIds: new Set(),
+    savedCamps: [],
     savedCount: 0,
     typeOptions: ['General'],
     orgCounts: { 'Org A': 1 },
@@ -53,7 +60,6 @@ function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
     setType: vi.fn(),
     setAge: vi.fn(),
     setSort: vi.fn(),
-
     setMaxCost: vi.fn(),
     setAidFilter: vi.fn(),
     setFreshnessFilter: vi.fn(),
@@ -68,28 +74,62 @@ function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
 }
 
 describe('FinderLayout', () => {
-  it('renders a single sticky mobile stack for filters and results summary', () => {
+  it('renders Browse and Saved tabs', () => {
     render(<FinderLayout {...makeFinderState()} />);
-
-    const filtersButton = screen.getByRole('button', { name: /filters/i });
-    const stickyStack = filtersButton.parentElement;
-
-    expect(stickyStack).toHaveClass('sticky');
-    expect(stickyStack).toHaveClass('top-[61px]');
-    expect(stickyStack).toHaveClass('lg:hidden');
-    expect(stickyStack).toHaveTextContent('Showing 1 of 1 camps');
-    expect(stickyStack).toHaveTextContent('Camp');
-    expect(stickyStack).toHaveTextContent('Open');
-    expect(stickyStack).toHaveTextContent('Fav');
+    expect(screen.getByRole('tab', { name: 'Browse' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Saved' })).toBeInTheDocument();
   });
 
-  it('keeps the in-list sticky header desktop-only', () => {
+  it('shows saved count in Saved tab button when camps are saved', () => {
+    render(
+      <FinderLayout
+        {...makeFinderState({
+          savedCount: 2,
+          savedCampIds: new Set(['camp-a', 'camp-b']),
+          savedCamps: [baseCamp, savedCamp],
+        })}
+      />,
+    );
+    expect(screen.getByRole('tab', { name: 'Saved (2)' })).toBeInTheDocument();
+  });
+
+  it('switches to Saved tab on click and shows saved camps', () => {
+    render(
+      <FinderLayout
+        {...makeFinderState({
+          savedCount: 1,
+          savedCampIds: new Set(['camp-b']),
+          savedCamps: [savedCamp],
+          visibleCamps: [baseCamp],
+        })}
+      />,
+    );
+
+    fireEvent.click(screen.getAllByRole('tab', { name: 'Saved (1)' })[0]);
+
+    expect(screen.getByText('Camp B')).toBeInTheDocument();
+    expect(screen.queryByText('Camp A')).not.toBeInTheDocument();
+  });
+
+  it('initializes on Saved tab when isSharedMode is true', () => {
+    render(
+      <FinderLayout
+        {...makeFinderState({
+          isSharedMode: true,
+          savedCount: 1,
+          savedCampIds: new Set(['camp-b']),
+          savedCamps: [savedCamp],
+        })}
+      />,
+    );
+    expect(screen.getByText('Camp B')).toBeInTheDocument();
+  });
+
+  it('shows empty state on Saved tab when nothing is saved', () => {
     render(<FinderLayout {...makeFinderState()} />);
 
-    const agesHeader = screen.getByText('Ages');
-    const stickyHeader = agesHeader.parentElement;
+    fireEvent.click(screen.getAllByRole('tab', { name: 'Saved' })[0]);
 
-    expect(stickyHeader).toHaveClass('sm:sticky');
-    expect(stickyHeader).toHaveClass('sm:top-[61px]');
+    expect(screen.getByText(/No saved camps yet/i)).toBeInTheDocument();
   });
 });

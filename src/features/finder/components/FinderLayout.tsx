@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import type { FinderState } from '../hooks/useFinderState';
+import type { FinderTab } from './FinderTabs';
 import FilterBar from './FilterBar';
 import CampList from './CampList';
 import ResultsSummary from './ResultsSummary';
 import SavedControls from './SavedControls';
+import FinderTabs from './FinderTabs';
 import { DEFAULT_FINDER_FILTERS } from '../../../lib/share/shareState';
 
 export default function FinderLayout(finder: FinderState) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<FinderTab>(
+    finder.isSharedMode ? 'saved' : 'browse',
+  );
 
   const f = finder.filters;
   const activeFilterCount = [
@@ -22,6 +27,14 @@ export default function FinderLayout(finder: FinderState) {
     f.selectedOrg !== DEFAULT_FINDER_FILTERS.selectedOrg,
   ].filter(Boolean).length;
 
+  const tabBar = (
+    <FinderTabs
+      activeTab={activeTab}
+      savedCount={finder.savedCount}
+      onTabChange={setActiveTab}
+    />
+  );
+
   const sidebar = (
     <div
       className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm"
@@ -34,35 +47,33 @@ export default function FinderLayout(finder: FinderState) {
         onFiltersChange={finder.setFilters}
         onResetFilters={finder.resetFilters}
       />
-
-      {finder.savedCount > 0 && (
-        <SavedControls
-          savedCount={finder.savedCount}
-          savedCampIds={finder.savedCampIds}
-          onClearSaved={finder.clearSavedCamps}
-        />
-      )}
     </div>
   );
 
   return (
     <div className="mx-auto max-w-[1260px] px-3 py-4 pb-12 sm:px-6 sm:py-6">
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
 
-        {/* ── Desktop Sidebar ── */}
-        <aside className="hidden lg:block lg:sticky lg:top-[61px] lg:max-h-[calc(100dvh-85px)] lg:overflow-y-auto">
-          {sidebar}
-        </aside>
+      {/* ── Sticky tab bar (mobile) ── */}
+      <div className="sticky top-[61px] z-30 -mx-3 mb-3 border-b border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm lg:hidden">
+        {tabBar}
+      </div>
 
-        {/* ── Mobile slide-over ── */}
-        {mobileFiltersOpen && (
+      <div className={activeTab === 'browse' ? 'grid gap-6 lg:grid-cols-[280px_1fr]' : ''}>
+
+        {/* ── Desktop Sidebar (Browse tab only) ── */}
+        {activeTab === 'browse' && (
+          <aside className="hidden lg:block lg:sticky lg:top-[61px] lg:max-h-[calc(100dvh-85px)] lg:overflow-y-auto">
+            {sidebar}
+          </aside>
+        )}
+
+        {/* ── Mobile slide-over (Browse tab only) ── */}
+        {activeTab === 'browse' && mobileFiltersOpen && (
           <>
-            {/* Backdrop */}
             <div
               className="fixed inset-0 z-40 bg-black/40 lg:hidden"
               onClick={() => setMobileFiltersOpen(false)}
             />
-            {/* Panel */}
             <div className="fixed inset-y-0 left-0 z-50 w-[300px] overflow-y-auto bg-white shadow-xl lg:hidden">
               <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3">
                 <span className="text-sm font-bold text-stone-700">Filters</span>
@@ -120,7 +131,7 @@ export default function FinderLayout(finder: FinderState) {
                 Try again
               </button>
             </div>
-          ) : (
+          ) : activeTab === 'saved' ? (
             <div className="space-y-3">
               {finder.isSharedMode && (
                 <div className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-800">
@@ -130,11 +141,47 @@ export default function FinderLayout(finder: FinderState) {
                 </div>
               )}
 
+              {/* Tab bar on desktop */}
+              <div className="hidden lg:block">
+                {tabBar}
+              </div>
+
+              {finder.savedCount === 0 ? (
+                <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center text-stone-400">
+                  <p className="text-2xl">☆</p>
+                  <p className="mt-2 text-sm font-medium">No saved camps yet.</p>
+                  <p className="mt-1 text-xs">Browse camps and tap ☆ to save them here.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="rounded-xl border border-stone-200 bg-white px-4 py-3">
+                    <SavedControls
+                      savedCount={finder.savedCount}
+                      savedCampIds={finder.savedCampIds}
+                      onClearSaved={finder.clearSavedCamps}
+                    />
+                  </div>
+                  <CampList
+                    camps={finder.savedCamps}
+                    savedCampIds={finder.savedCampIds}
+                    onToggleSavedCamp={finder.toggleSavedCamp}
+                  />
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {/* Tab bar on desktop */}
+              <div className="hidden lg:block" aria-hidden="true">
+                {tabBar}
+              </div>
+
               <ResultsSummary
                 visibleCamps={finder.visibleCamps}
                 totalCount={finder.camps.length}
               />
 
+              {/* Mobile sticky filter bar */}
               <div className="sticky top-[110px] z-20 -mx-3 border-y border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm sm:top-[89px] lg:hidden">
                 <button
                   type="button"

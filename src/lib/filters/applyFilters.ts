@@ -224,11 +224,6 @@ export function applyFilters(
       if (filters.aidFilter === 'known') return camp.financialAidAvailable != null;
       return true;
     })
-    .filter((camp) => {
-      if (filters.freshnessFilter === 'current') return !camp.isStale;
-      if (filters.freshnessFilter === 'stale') return camp.isStale;
-      return true;
-    })
     .filter((camp) =>
       filters.selectedOrg == null || camp.organization === filters.selectedOrg,
     )

@@ -23,7 +23,6 @@ export default function FinderLayout(finder: FinderState) {
     f.maxCost !== DEFAULT_FINDER_FILTERS.maxCost,
     f.aidFilter !== DEFAULT_FINDER_FILTERS.aidFilter,
     f.season !== DEFAULT_FINDER_FILTERS.season,
-    f.freshnessFilter !== DEFAULT_FINDER_FILTERS.freshnessFilter,
     f.selectedOrg !== DEFAULT_FINDER_FILTERS.selectedOrg,
   ].filter(Boolean).length;
 

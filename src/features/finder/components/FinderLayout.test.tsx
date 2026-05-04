@@ -62,7 +62,6 @@ function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
     setSort: vi.fn(),
     setMaxCost: vi.fn(),
     setAidFilter: vi.fn(),
-    setFreshnessFilter: vi.fn(),
     setSelectedOrg: vi.fn(),
     selectCamp: vi.fn(),
     toggleSavedCamp: vi.fn(),

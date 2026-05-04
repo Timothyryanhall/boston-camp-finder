@@ -32,11 +32,12 @@ Return a JSON object with exactly these top-level keys:
       "data_is_stale": "boolean - true if info appears to be from a year prior to {current_year}"
     }}
   ],
-  "follow_up_urls": ["up to 3 URLs on this page that likely lead to more camp details"],
+  "follow_up_urls": ["up to 8 URLs on this page that likely lead to more camp details, registration, pricing, dates, or location pages"],
   "has_sufficient_data": "boolean - true if camps array has useful, reasonably complete information"
 }}
 
 Current year is {current_year}. If schedules or registration dates appear to be from {prior_year} or earlier, set data_is_stale to true and data_year to that year.
+If this page is a directory or landing page, include high-confidence camp detail links in follow_up_urls even when camps has some useful data.
 
 Return only valid JSON. No markdown fences, no explanation, no text before or after the JSON.
 

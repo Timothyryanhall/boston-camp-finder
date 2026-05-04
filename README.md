@@ -58,6 +58,23 @@ node --test api/validate.test.js
 python3 -m pytest
 ```
 
+## Scraper Source Review
+
+Sources live in `scraper/sources.py`. Each source must include:
+
+```python
+{"name": "Camp Provider", "url": "https://example.org/summer-camp/"}
+```
+
+Optional source controls keep crawling focused:
+
+- `max_pages`: per-source page cap. Use this for directories that need several detail pages without raising the global crawl limit.
+- `include_patterns`: URL text that should be prioritized for follow-up crawling, such as `camp`, `summer`, `registration`, `program`, or `rates`.
+- `exclude_patterns`: URL text to skip, such as `career`, `donate`, `privacy`, `news`, or unrelated events.
+- `allow_external_registration_domains`: registration hosts that are safe to follow when a provider uses a third-party platform.
+
+When reviewing new discovery candidates, prefer the official camp page over a directory listing. Add uncertain or broad regional directories only when they lead to official camp pages and can be bounded with `max_pages` plus include/exclude patterns. After a scrape, check the printed data quality summary for duplicate rows, missing fields, and out-of-scope distances before accepting the refreshed `data.json`.
+
 ## Deployment
 
 - `main` deploys to Vercel

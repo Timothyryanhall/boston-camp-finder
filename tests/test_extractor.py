@@ -80,3 +80,8 @@ def test_extraction_prompt_contains_all_required_fields():
     ]
     for field in required:
         assert field in EXTRACTION_PROMPT, f"Missing field '{field}' in EXTRACTION_PROMPT"
+
+
+def test_extraction_prompt_requests_more_follow_up_urls_for_directory_pages():
+    assert "up to 8 URLs" in EXTRACTION_PROMPT
+    assert "directory or landing page" in EXTRACTION_PROMPT

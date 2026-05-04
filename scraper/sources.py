@@ -67,4 +67,52 @@ SOURCES: list[dict] = [
         "name": "Boston Children's Museum",
         "url": "https://summercamp.bostonchildrensmuseum.org/overview",
     },
+    {
+        "name": "Boston Ballet School",
+        "url": "https://www.bostonballet.org/education-artical/summer-camps/",
+        "max_pages": 4,
+        "include_patterns": ["camp", "summer", "registration", "register", "program", "financial-aid"],
+    },
+    {
+        "name": "Boston College Eagles Rec Camp",
+        "url": "https://www.bc.edu/bc-web/offices/rec/youth-programs/Eagles_Rec_Camp.html",
+        "max_pages": 4,
+        "include_patterns": ["camp", "summer", "youth", "registration", "register", "program"],
+    },
+    {
+        "name": "Camp Shriver",
+        "url": "https://www.umb.edu/csde/camp-shriver-community/camp-shriver/",
+        "max_pages": 4,
+        "include_patterns": ["camp", "summer", "youth", "application", "program"],
+    },
+    {
+        "name": "Boston Parks and Recreation",
+        "url": "https://www.boston.gov/departments/parks-and-recreation/parks-sports-and-activities",
+        "max_pages": 5,
+        "include_patterns": ["camp", "summer", "youth", "kids", "program", "sports", "recreation"],
+    },
+    {
+        "name": "Brookline Recreation",
+        "url": "https://www.brooklinerec.com/156/Camp-Information",
+        "max_pages": 5,
+        "include_patterns": ["camp", "summer", "youth", "kids", "registration", "program", "recreation"],
+    },
+    {
+        "name": "Newton Parks and Recreation",
+        "url": "https://www.newtonma.gov/government/parks-recreation-culture/camps",
+        "max_pages": 5,
+        "include_patterns": ["camp", "summer", "youth", "kids", "registration", "program", "recreation"],
+    },
+    {
+        "name": "Creative Arts at Park",
+        "url": "https://www.creativeartsatpark.org/",
+        "max_pages": 5,
+        "include_patterns": ["camp", "summer", "arts", "registration", "rates", "program"],
+    },
+    {
+        "name": "Dedham Country Day Camp",
+        "url": "https://www.dedhamcountryday.org/summer-camp/",
+        "max_pages": 5,
+        "include_patterns": ["camp", "summer", "registration", "rates", "program"],
+    },
 ]

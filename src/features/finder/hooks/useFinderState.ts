@@ -36,6 +36,7 @@ export interface FinderState {
   visibleCamps: Camp[];
   savedCampIds: Set<string>;
   savedCount: number;
+  savedCamps: Camp[];
   typeOptions: CampType[];
   orgCounts: Record<string, number>;
   lastScrapedLabel: string | null;
@@ -47,7 +48,6 @@ export interface FinderState {
   setType: (type: CampType | 'all') => void;
   setAge: (age: number | null) => void;
   setSort: (sort: FinderSort) => void;
-  setSavedOnly: (savedOnly: boolean) => void;
   setMaxCost: (maxCost: number | null) => void;
   setAidFilter: (aid: FinderAidFilter) => void;
   setFreshnessFilter: (fresh: FinderFreshnessFilter) => void;
@@ -78,9 +78,7 @@ export function useFinderState(): FinderState {
   const sharedIdsOnLoad = parseSharedIds(location.search);
   const [isSharedMode, setIsSharedMode] = useState(sharedIdsOnLoad != null);
   const [filters, setFiltersState] = useState<FinderFilters>(() =>
-    sharedIdsOnLoad != null
-      ? { ...initialShareState.filters, savedOnly: true }
-      : initialShareState.filters,
+    initialShareState.filters,
   );
   const [selectedCampId, setSelectedCampId] = useState<string | null>(
     initialShareState.selectedCampId,
@@ -173,7 +171,7 @@ export function useFinderState(): FinderState {
 
   const campsForOrgCounts =
     status === 'ready'
-      ? applyFilters(camps, { ...filters, selectedOrg: null }, savedCampIds)
+      ? applyFilters(camps, { ...filters, selectedOrg: null })
       : [];
 
   const visibleCamps =
@@ -193,6 +191,9 @@ export function useFinderState(): FinderState {
   const selectedCampVisible =
     selectedCampId != null ? visibleCamps.some((camp) => camp.id === selectedCampId) : false;
   const savedCount = savedCampIds.size;
+  const savedCamps = camps
+    .filter((camp) => savedCampIds.has(camp.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
   const typeOptions = Array.from(
     new Set(camps.flatMap((camp) => camp.typeTags)),
   ).sort((left, right) => left.localeCompare(right));
@@ -223,6 +224,7 @@ export function useFinderState(): FinderState {
     visibleCamps,
     savedCampIds,
     savedCount,
+    savedCamps,
     typeOptions,
     orgCounts,
     lastScrapedLabel,
@@ -234,7 +236,6 @@ export function useFinderState(): FinderState {
     setType: (type) => updateFilters({ type }),
     setAge: (age) => updateFilters({ age }),
     setSort: (sort) => updateFilters({ sort }),
-    setSavedOnly: (savedOnly) => updateFilters({ savedOnly }),
     setMaxCost: (maxCost) => updateFilters({ maxCost }),
     setAidFilter: (aidFilter) => updateFilters({ aidFilter }),
     setFreshnessFilter: (freshnessFilter) => updateFilters({ freshnessFilter }),
@@ -244,7 +245,6 @@ export function useFinderState(): FinderState {
       setSavedCampIdsState((current) => toggleSavedCampId(current, campId)),
     clearSavedCamps: () => {
       setSavedCampIdsState(new Set());
-      updateFilters({ savedOnly: false });
     },
     resetFilters: () => setFiltersState(DEFAULT_FINDER_FILTERS),
     retry: () => setReloadToken((current) => current + 1),

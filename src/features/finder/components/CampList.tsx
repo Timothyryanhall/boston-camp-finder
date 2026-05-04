@@ -29,7 +29,7 @@ export default function CampList({ camps, savedCampIds, onToggleSavedCamp }: Cam
       style={{ boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 16px rgba(28,25,23,0.05)' }}
     >
       {/* Sticky desktop column header — kept outside [overflow:clip] so position:sticky works */}
-      <div className="hidden border-b-[1.5px] border-stone-200 bg-stone-50 px-4 py-2 sm:sticky sm:top-[89px] sm:z-10 sm:grid sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3">
+      <div className="hidden border-b-[1.5px] border-stone-200 bg-stone-50 px-4 py-2 sm:grid sm:grid-cols-[1fr_90px_100px_80px_32px_48px] sm:gap-3 lg:sticky lg:top-[148px] lg:z-10">
           <div className="text-left text-[10px] font-bold uppercase tracking-widest text-stone-500">
             Camp
           </div>

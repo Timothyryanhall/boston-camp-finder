@@ -53,8 +53,8 @@ export default function FinderLayout(finder: FinderState) {
   return (
     <div className="mx-auto max-w-[1260px] px-3 py-4 pb-12 sm:px-6 sm:py-6">
 
-      {/* ── Sticky tab bar (mobile) ── */}
-      <div className="sticky top-[61px] z-30 -mx-3 mb-3 border-b border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm lg:hidden">
+      {/* ── Sticky tab bar ── */}
+      <div className="sticky top-[110px] z-30 -mx-3 mb-3 border-b border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm sm:top-[89px]">
         {tabBar}
       </div>
 
@@ -62,7 +62,7 @@ export default function FinderLayout(finder: FinderState) {
 
         {/* ── Desktop Sidebar (Browse tab only) ── */}
         {activeTab === 'browse' && (
-          <aside className="hidden lg:block lg:sticky lg:top-[61px] lg:max-h-[calc(100dvh-85px)] lg:overflow-y-auto">
+          <aside className="hidden lg:block lg:sticky lg:top-[148px] lg:max-h-[calc(100dvh-164px)] lg:overflow-y-auto">
             {sidebar}
           </aside>
         )}
@@ -141,11 +141,6 @@ export default function FinderLayout(finder: FinderState) {
                 </div>
               )}
 
-              {/* Tab bar on desktop */}
-              <div className="hidden lg:block">
-                {tabBar}
-              </div>
-
               {finder.savedCount === 0 ? (
                 <div className="rounded-xl border border-stone-200 bg-white px-6 py-12 text-center text-stone-400">
                   <p className="text-2xl">☆</p>
@@ -171,18 +166,13 @@ export default function FinderLayout(finder: FinderState) {
             </div>
           ) : (
             <div className="space-y-3">
-              {/* Tab bar on desktop */}
-              <div className="hidden lg:block">
-                {tabBar}
-              </div>
-
               <ResultsSummary
                 visibleCamps={finder.visibleCamps}
                 totalCount={finder.camps.length}
               />
 
               {/* Mobile sticky filter bar */}
-              <div className="sticky top-[110px] z-20 -mx-3 border-y border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm sm:top-[89px] lg:hidden">
+              <div className="sticky top-[169px] z-20 -mx-3 border-y border-stone-200 bg-[#d8e0e8]/95 px-3 py-2 backdrop-blur-sm sm:top-[148px] lg:hidden">
                 <button
                   type="button"
                   onClick={() => setMobileFiltersOpen(true)}

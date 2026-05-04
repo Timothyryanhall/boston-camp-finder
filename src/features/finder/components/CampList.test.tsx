@@ -41,7 +41,7 @@ describe('CampList', () => {
     const agesHeader = screen.getByText('Ages');
     const stickyHeader = agesHeader.parentElement;
 
-    expect(stickyHeader).toHaveClass('sm:sticky');
-    expect(stickyHeader).toHaveClass('sm:top-[89px]');
+    expect(stickyHeader).toHaveClass('lg:sticky');
+    expect(stickyHeader).toHaveClass('lg:top-[148px]');
   });
 });

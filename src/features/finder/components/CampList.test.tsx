@@ -42,6 +42,6 @@ describe('CampList', () => {
     const stickyHeader = agesHeader.parentElement;
 
     expect(stickyHeader).toHaveClass('sm:sticky');
-    expect(stickyHeader).toHaveClass('sm:top-[61px]');
+    expect(stickyHeader).toHaveClass('sm:top-[89px]');
   });
 });

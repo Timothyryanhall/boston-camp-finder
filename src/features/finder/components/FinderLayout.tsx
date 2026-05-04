@@ -172,7 +172,7 @@ export default function FinderLayout(finder: FinderState) {
           ) : (
             <div className="space-y-3">
               {/* Tab bar on desktop */}
-              <div className="hidden lg:block" aria-hidden="true">
+              <div className="hidden lg:block">
                 {tabBar}
               </div>
 

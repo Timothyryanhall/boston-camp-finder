@@ -76,8 +76,8 @@ function makeFinderState(overrides: Partial<FinderState> = {}): FinderState {
 describe('FinderLayout', () => {
   it('renders Browse and Saved tabs', () => {
     render(<FinderLayout {...makeFinderState()} />);
-    expect(screen.getByRole('tab', { name: 'Browse' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Saved' })).toBeInTheDocument();
+    expect(screen.getAllByRole('tab', { name: 'Browse' })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole('tab', { name: 'Saved' })[0]).toBeInTheDocument();
   });
 
   it('shows saved count in Saved tab button when camps are saved', () => {
@@ -90,7 +90,7 @@ describe('FinderLayout', () => {
         })}
       />,
     );
-    expect(screen.getByRole('tab', { name: 'Saved (2)' })).toBeInTheDocument();
+    expect(screen.getAllByRole('tab', { name: 'Saved (2)' })[0]).toBeInTheDocument();
   });
 
   it('switches to Saved tab on click and shows saved camps', () => {
@@ -123,6 +123,7 @@ describe('FinderLayout', () => {
       />,
     );
     expect(screen.getByText('Camp B')).toBeInTheDocument();
+    expect(screen.getByText(/Viewing a shared list/i)).toBeInTheDocument();
   });
 
   it('shows empty state on Saved tab when nothing is saved', () => {

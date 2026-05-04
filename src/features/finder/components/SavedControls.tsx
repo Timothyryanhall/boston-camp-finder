@@ -1,17 +1,59 @@
 import { useState } from 'react';
+import type { Camp } from '../types';
 
 interface SavedControlsProps {
   savedCount: number;
   savedCampIds: Set<string>;
+  savedCamps: Camp[];
   onClearSaved: () => void;
+}
+
+function csvCell(value: string | number | boolean | null | undefined): string {
+  if (value == null) return '""';
+  const s = String(value);
+  return `"${s.replace(/"/g, '""')}"`;
 }
 
 export default function SavedControls({
   savedCount,
   savedCampIds,
+  savedCamps,
   onClearSaved,
 }: SavedControlsProps) {
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
+
+  function downloadCsv() {
+    const headers = [
+      'Name', 'Organization', 'Type', 'Ages', 'Neighborhood', 'Address',
+      'Distance (mi)', 'Hours', 'Schedule', 'Cost/Week', 'Financial Aid',
+      'Signup Opens', 'Website', 'Signup URL',
+    ];
+    const rows = savedCamps.map((c) => [
+      c.name,
+      c.organization,
+      c.type,
+      c.ageRange,
+      c.neighborhood,
+      c.address,
+      c.distanceMiles ?? '',
+      c.hoursLabel,
+      c.weeksLabel,
+      c.costLabel,
+      c.financialAidAvailable === true ? 'Yes' : c.financialAidAvailable === false ? 'No' : '',
+      c.signupOpensLabel,
+      c.websiteUrl ?? '',
+      c.signupUrl ?? '',
+    ].map(csvCell).join(','));
+
+    const csv = [headers.map(csvCell).join(','), ...rows].join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'saved-camps.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   function copyShareLink() {
     const ids = Array.from(savedCampIds).join(',');
@@ -62,6 +104,13 @@ export default function SavedControls({
           ].join(' ')}
         >
           {copyStatus === 'copied' ? '✓ Copied!' : '🔗 Copy link'}
+        </button>
+        <button
+          type="button"
+          onClick={downloadCsv}
+          className="rounded-lg border border-stone-200 px-2.5 py-1 text-xs font-semibold text-stone-700 transition hover:bg-stone-50"
+        >
+          ↓ CSV
         </button>
         <button
           type="button"

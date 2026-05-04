@@ -153,6 +153,7 @@ export default function FinderLayout(finder: FinderState) {
                     <SavedControls
                       savedCount={finder.savedCount}
                       savedCampIds={finder.savedCampIds}
+                      savedCamps={finder.savedCamps}
                       onClearSaved={finder.clearSavedCamps}
                     />
                   </div>

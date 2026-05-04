@@ -199,7 +199,6 @@ function compareCamps(left: Camp, right: Camp, sort: FinderFilters['sort']): num
 export function applyFilters(
   camps: Camp[],
   filters: FinderFilters,
-  savedIds: Set<string>,
 ): Camp[] {
   return camps
     .filter((camp) => matchesQuery(camp, filters.query))
@@ -215,7 +214,6 @@ export function applyFilters(
         (camp.distanceMiles ?? Number.POSITIVE_INFINITY) <= filters.maxDistance,
     )
     .filter((camp) => matchesAge(camp.ageRange, filters.age))
-    .filter((camp) => !filters.savedOnly || savedIds.has(camp.id))
     .filter((camp) => {
       if (filters.maxCost == null) return true;
       const cost = extractCost(camp.costLabel);

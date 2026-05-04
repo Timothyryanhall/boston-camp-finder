@@ -71,7 +71,6 @@ export interface FinderFilters {
   maxDistance: number | null;
   type: CampType | 'all';
   age: number | null;
-  savedOnly: boolean;
   sort: FinderSort;
   maxCost: number | null;
   aidFilter: FinderAidFilter;
